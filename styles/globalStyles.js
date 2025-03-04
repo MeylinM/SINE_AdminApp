@@ -16,7 +16,7 @@ export default StyleSheet.create({
     textAlign: "center",
   },
   button: {
-    backgroundColor: "#0096FF",
+    backgroundColor: "#019edf",
     padding: 15,
     borderRadius: 25,
     width: "80%",
@@ -29,7 +29,7 @@ export default StyleSheet.create({
     fontWeight: "bold",
   },
   input: {
-    backgroundColor: "#7EC8E3",
+    backgroundColor: "#019edf",
     width: "90%",
     padding: 10,
     borderRadius: 10,
