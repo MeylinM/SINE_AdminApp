@@ -1,125 +1,97 @@
-import React, { useState } from "react"; // Importamos React y el hook useState
-import {
-  View,
-  TextInput,
-  FlatList,
-  TouchableOpacity,
-  Text,
-  Alert,
-  Modal,
-} from "react-native";
-import globalStyles from "../styles/globalStyles"; // Importamos los estilos globales
-import styles from "../styles/empleadosStyles"; // Importamos los estilos específicos de esta pantalla
-import Header from "../components/Header"; // Importamos el Header de la app
-
-// Lista inicial de empleados (creamos 30 empleados con nombres "Nombre 1", "Nombre 2", etc.)
-const empleadosIniciales = Array.from({ length: 30 }, (_, i) => ({
-  id: `${i + 1}`,
-  nombre: `Nombre ${i + 1}`,
-}));
+import React, { useState, useEffect } from "react";
+import { View, TextInput, FlatList, TouchableOpacity, Text, Alert, Modal } from "react-native";
+import globalStyles from "../styles/globalStyles";
+import styles from "../styles/empleadosStyles";
+import Header from "../components/Header";
+import { obtenerEmpleados, agregarEmpleado, eliminarEmpleado } from "../services/empleadosService";
 
 export default function Empleados() {
-  // Estado para manejar el texto del filtro de búsqueda
   const [search, setSearch] = useState("");
-
-  // Estado que almacena TODOS los empleados (original y actualizado)
-  const [allEmpleados, setAllEmpleados] = useState(empleadosIniciales);
-
-  // Estado que almacena SOLO los empleados que se están mostrando (según el filtro)
-  const [empleados, setEmpleados] = useState(empleadosIniciales);
-
-  // Estado para manejar el empleado seleccionado (para eliminarlo)
+  const [allEmpleados, setAllEmpleados] = useState([]); // Lista completa desde la BD
+  const [empleados, setEmpleados] = useState([]); // Lista filtrada
   const [selectedEmployee, setSelectedEmployee] = useState(null);
-
-  // Estado para manejar si el modal de añadir empleado está visible
   const [modalVisible, setModalVisible] = useState(false);
-
-  // Estado para almacenar el nombre del nuevo empleado ingresado en el modal
   const [newEmployeeName, setNewEmployeeName] = useState("");
 
-  //  Función para filtrar empleados en tiempo real (cuando el usuario escribe en el buscador)
-  const handleSearch = (text) => {
-    setSearch(text); // Guardamos el texto ingresado en el estado
+  // 📌 Cargar empleados al iniciar la pantalla
+  useEffect(() => {
+    fetchEmpleados();
+  }, []);
 
+  // 📌 Función para obtener empleados de la base de datos
+  const fetchEmpleados = async () => {
+    const empleadosDB = await obtenerEmpleados();
+    setAllEmpleados(empleadosDB);
+    setEmpleados(empleadosDB);
+  };
+
+  // 📌 Filtrar empleados en tiempo real
+  const handleSearch = (text) => {
+    setSearch(text);
     if (text === "") {
-      setEmpleados(allEmpleados); // Si el filtro está vacío, mostramos todos los empleados
+      setEmpleados(allEmpleados);
     } else {
-      const filtered = allEmpleados.filter(
-        (empleado) => empleado.nombre.toLowerCase().includes(text.toLowerCase()) // Buscamos coincidencias sin importar mayúsculas/minúsculas
+      const filtered = allEmpleados.filter((empleado) =>
+        empleado.nombre.toLowerCase().includes(text.toLowerCase())
       );
-      setEmpleados(filtered); // Actualizamos la lista mostrada con los empleados filtrados
+      setEmpleados(filtered);
     }
   };
 
-  //  Función para seleccionar un empleado al hacer clic en él
+  // 📌 Seleccionar un empleado
   const handleSelect = (empleado) => {
-    // Si el usuario hace clic en un empleado ya seleccionado, lo deseleccionamos
-    // Si hace clic en otro, lo seleccionamos
     setSelectedEmployee(empleado.id === selectedEmployee?.id ? null : empleado);
   };
 
-  //  Función para eliminar un empleado con una alerta de confirmación
-  const handleDelete = () => {
-    if (!selectedEmployee) return; // Si no hay un empleado seleccionado, no hacemos nada
+  // 📌 Eliminar empleado con confirmación y recargar lista desde la BD
+  const handleDelete = async () => {
+    if (!selectedEmployee) return;
 
     Alert.alert(
-      "Confirmación", // Título de la alerta
-      `¿Estás seguro de que deseas eliminar a ${selectedEmployee.nombre}?`, // Mensaje de la alerta
+      "Confirmación",
+      `¿Eliminar a ${selectedEmployee.nombre}?`,
       [
-        { text: "Cancelar", style: "cancel" }, // Opción para cancelar la eliminación
+        { text: "Cancelar", style: "cancel" },
         {
           text: "Eliminar",
           style: "destructive",
-          onPress: () => {
-            // Filtramos la lista para quitar el empleado seleccionado
-            const updatedList = allEmpleados.filter(
-              (emp) => emp.id !== selectedEmployee.id
-            );
-            setAllEmpleados(updatedList); // Actualizamos la lista completa
-            setEmpleados(updatedList); // También actualizamos la lista mostrada
-            setSelectedEmployee(null); // Deseleccionamos el empleado
+          onPress: async () => {
+            await eliminarEmpleado(selectedEmployee.id);
+            await fetchEmpleados(); // Recargamos desde la BD en lugar de modificar el array local
+            setSelectedEmployee(null);
           },
         },
       ]
     );
   };
 
-  //  Función que se ejecuta al presionar el botón "AÑADIR NUEVO EMPLEADO"
+  // 📌 Mostrar modal para agregar un empleado
   const handleAddEmployee = () => {
-    setModalVisible(true); // Mostramos el modal para ingresar el nombre del nuevo empleado
+    setModalVisible(true);
   };
 
-  //  Función que añade el nuevo empleado a la lista
-  const confirmAddEmployee = () => {
+  // 📌 Confirmar y agregar nuevo empleado en la BD
+  const confirmAddEmployee = async () => {
     if (!newEmployeeName.trim()) {
-      Alert.alert("Error", "El nombre no puede estar vacío."); // Mostramos un error si el nombre está vacío
+      Alert.alert("Error", "El nombre no puede estar vacío.");
       return;
     }
 
-    // Buscamos el ID más alto en la lista y le sumamos 1 para el nuevo empleado
-    const maxId =
-      allEmpleados.length > 0
-        ? Math.max(...allEmpleados.map((e) => parseInt(e.id)))
-        : 0;
-    const newEmployee = {
-      id: `${maxId + 1}`, // Generamos un ID único
-      nombre: newEmployeeName.trim(), // Guardamos el nombre sin espacios extra
-    };
+    const newEmployee = await agregarEmpleado(newEmployeeName.trim());
 
-    const updatedList = [...allEmpleados, newEmployee]; // Agregamos el nuevo empleado a la lista
-
-    setAllEmpleados(updatedList); // Actualizamos la lista completa
-    setEmpleados(updatedList); // También actualizamos la lista mostrada para que el nuevo empleado aparezca
-    setNewEmployeeName(""); // Limpiamos el input del modal
-    setModalVisible(false); // Cerramos el modal
+    if (newEmployee) {
+      await fetchEmpleados(); // Recargamos la lista desde la BD
+      setNewEmployeeName("");
+      setModalVisible(false);
+    } else {
+      Alert.alert("Error", "No se pudo agregar el empleado.");
+    }
   };
 
   return (
     <View style={styles.container}>
-      {/* Header fijo arriba */}
       <Header />
 
-      {/* Barra de búsqueda */}
       <TextInput
         style={globalStyles.input}
         placeholder="Filtrar por nombre"
@@ -127,19 +99,15 @@ export default function Empleados() {
         onChangeText={handleSearch}
       />
 
-      {/* Contenedor de la lista de empleados con scroll */}
       <View style={styles.listWrapper}>
         <View style={styles.listContainer}>
           <Text style={styles.header}>EMPLEADOS</Text>
           <FlatList
-            data={empleados} // Usamos la lista filtrada
-            keyExtractor={(item) => item.id} // Usamos el ID como clave única
+            data={empleados}
+            keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
               <TouchableOpacity
-                style={[
-                  styles.item,
-                  selectedEmployee?.id === item.id ? styles.selectedItem : null, // Resaltamos si está seleccionado
-                ]}
+                style={[styles.item, selectedEmployee?.id === item.id ? styles.selectedItem : null]}
                 onPress={() => handleSelect(item)}
               >
                 <Text>{item.nombre}</Text>
@@ -149,22 +117,13 @@ export default function Empleados() {
         </View>
       </View>
 
-      {/* Botones Fijos Abajo */}
       <View style={styles.buttonsContainer}>
-        {/* Botón para añadir un nuevo empleado */}
-        <TouchableOpacity
-          style={globalStyles.button}
-          onPress={handleAddEmployee}
-        >
+        <TouchableOpacity style={globalStyles.button} onPress={handleAddEmployee}>
           <Text style={globalStyles.buttonText}>AÑADIR NUEVO EMPLEADO</Text>
         </TouchableOpacity>
 
-        {/* Botón de eliminar (deshabilitado si no hay un empleado seleccionado) */}
         <TouchableOpacity
-          style={[
-            globalStyles.button,
-            selectedEmployee ? {} : styles.disabledButton,
-          ]}
+          style={[globalStyles.button, selectedEmployee ? {} : styles.disabledButton]}
           onPress={handleDelete}
           disabled={!selectedEmployee}
         >
@@ -184,10 +143,7 @@ export default function Empleados() {
               onChangeText={setNewEmployeeName}
             />
             <View style={styles.modalButtons}>
-              <TouchableOpacity
-                style={styles.modalButton}
-                onPress={confirmAddEmployee}
-              >
+              <TouchableOpacity style={styles.modalButton} onPress={confirmAddEmployee}>
                 <Text style={styles.buttonText}>Añadir</Text>
               </TouchableOpacity>
               <TouchableOpacity

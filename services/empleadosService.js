@@ -1,35 +1,39 @@
-const API_URL = "https://tu-servidor.com/api/empleados"; // Reemplázalo con la URL de tu backend
+const API_URL = "https://192.168.10.101:3000/usuario"; // Reemplázalo con la URL real
 
-// Obtener todos los empleados desde la base de datos
+// 📌 Obtener todos los empleados desde la base de datos
 export const obtenerEmpleados = async () => {
   try {
-    const response = await fetch(`${API_URL}`);
+    const response = await fetch(API_URL);
+    if (!response.ok) throw new Error("Error en la respuesta del servidor");
     const data = await response.json();
-    return data; // Devolvemos la lista de empleados
+    return data;
   } catch (error) {
     console.error("Error obteniendo empleados:", error);
-    return [];
+    return []; // Retornamos un array vacío para evitar fallos en la UI
   }
 };
 
-// Agregar un nuevo empleado a la base de datos
+// 📌 Agregar un nuevo empleado a la base de datos
 export const agregarEmpleado = async (nombre) => {
   try {
-    const response = await fetch(`${API_URL}`, {
+    const response = await fetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ nombre }),
     });
-    return await response.json(); // Devolvemos el empleado creado
+    if (!response.ok) throw new Error("Error al añadir empleado");
+    return await response.json();
   } catch (error) {
     console.error("Error agregando empleado:", error);
+    return null; // Retornamos null si hay error
   }
 };
 
-// Eliminar un empleado de la base de datos
+// 📌 Eliminar un empleado de la base de datos
 export const eliminarEmpleado = async (id) => {
   try {
-    await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+    const response = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+    if (!response.ok) throw new Error("Error al eliminar empleado");
   } catch (error) {
     console.error("Error eliminando empleado:", error);
   }
