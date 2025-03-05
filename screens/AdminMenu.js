@@ -9,18 +9,18 @@ export default function AdminMenu() {
 
   return (
     <View style={globalStyles.container}>
-      <Image source={require("../assets/logo.png")} style={styles.logo} />
-      <Text style={globalStyles.title}>Bienvenido/a</Text>
+      <Image source={require("../assets/header_menu.png")} style={styles.headerImage} />
+      <Text style={styles.title}>Bienvenido/a</Text>
 
       <TouchableOpacity
-        style={globalStyles.button}
+        style={styles.button}
         onPress={() => navigation.navigate("Empleados")}
       >
         <Text style={globalStyles.buttonText}>GESTIONAR EMPLEADOS</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
-        style={globalStyles.button}
+        style={styles.button}
         onPress={() => navigation.navigate("Bobinas")}
       >
         <Text style={globalStyles.buttonText}>INFORME DE BOBINAS</Text>
