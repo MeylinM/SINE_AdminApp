@@ -4,6 +4,7 @@ import globalStyles from "../styles/globalStyles";
 import styles from "../styles/empleadosStyles";
 import Header from "../components/Header";
 import { obtenerEmpleados, agregarEmpleado, desactivarEmpleado} from "../services/empleadosService";
+import * as ScreenOrientation from "expo-screen-orientation";
 
 export default function Empleados() {
   const [search, setSearch] = useState("");
@@ -88,6 +89,10 @@ export default function Empleados() {
     }
   };
 
+  useEffect(() => {
+    ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
+  }, []);
+  
   return (
     <View style={styles.container}>
       <Header />

@@ -1,11 +1,17 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import globalStyles from "../styles/globalStyles";
 import styles from "../styles/adminMenuStyles";
+import * as ScreenOrientation from "expo-screen-orientation";
+
 
 export default function AdminMenu() {
   const navigation = useNavigation();
+
+  useEffect(() => {
+    ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
+  }, []);
 
   return (
     <View style={globalStyles.container}>
