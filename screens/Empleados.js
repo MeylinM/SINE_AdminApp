@@ -3,7 +3,7 @@ import { View, TextInput, FlatList, TouchableOpacity, Text, Alert, Modal } from 
 import globalStyles from "../styles/globalStyles";
 import styles from "../styles/empleadosStyles";
 import Header from "../components/Header";
-import { obtenerEmpleados, agregarEmpleado, eliminarEmpleado } from "../services/empleadosService";
+import { obtenerEmpleados, agregarEmpleado, desactivarEmpleado} from "../services/empleadosService";
 
 export default function Empleados() {
   const [search, setSearch] = useState("");
