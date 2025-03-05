@@ -13,19 +13,19 @@ export default function Empleados() {
   const [modalVisible, setModalVisible] = useState(false);
   const [newEmployeeName, setNewEmployeeName] = useState("");
 
-  // 📌 Cargar empleados al iniciar la pantalla
+  // Cargar empleados al iniciar la pantalla
   useEffect(() => {
     fetchEmpleados();
   }, []);
 
-  // 📌 Función para obtener empleados de la base de datos
+  // Función para obtener empleados de la base de datos
   const fetchEmpleados = async () => {
     const empleadosDB = await obtenerEmpleados();
     setAllEmpleados(empleadosDB);
     setEmpleados(empleadosDB);
   };
 
-  // 📌 Filtrar empleados en tiempo real
+  // Filtrar empleados en tiempo real
   const handleSearch = (text) => {
     setSearch(text);
     if (text === "") {
@@ -38,39 +38,39 @@ export default function Empleados() {
     }
   };
 
-  // 📌 Seleccionar un empleado
+  // Seleccionar un empleado
   const handleSelect = (empleado) => {
     setSelectedEmployee(empleado.id === selectedEmployee?.id ? null : empleado);
   };
 
-  // 📌 Eliminar empleado con confirmación y recargar lista desde la BD
-  const handleDelete = async () => {
-    if (!selectedEmployee) return;
+ // Desactivar empleado con confirmación
+ const handleDesactivar = async () => {
+  if (!selectedEmployee) return;
 
-    Alert.alert(
-      "Confirmación",
-      `¿Eliminar a ${selectedEmployee.nombre}?`,
-      [
-        { text: "Cancelar", style: "cancel" },
-        {
-          text: "Eliminar",
-          style: "destructive",
-          onPress: async () => {
-            await eliminarEmpleado(selectedEmployee.id);
-            await fetchEmpleados(); // Recargamos desde la BD en lugar de modificar el array local
-            setSelectedEmployee(null);
-          },
+  Alert.alert(
+    "Confirmación",
+    `¿Está seguro de qye quiere eliminar a ${selectedEmployee.nombre}?`,
+    [
+      { text: "Cancelar", style: "cancel" },
+      {
+        text: "Desactivar",
+        style: "destructive",
+        onPress: async () => {
+          await desactivarEmpleado(selectedEmployee.id);
+          await fetchEmpleados(); // Recargamos la lista desde la BD
+          setSelectedEmployee(null);
         },
-      ]
-    );
-  };
+      },
+    ]
+  );
+};
 
-  // 📌 Mostrar modal para agregar un empleado
+  // Mostrar modal para agregar un empleado
   const handleAddEmployee = () => {
     setModalVisible(true);
   };
 
-  // 📌 Confirmar y agregar nuevo empleado en la BD
+  // Confirmar y agregar nuevo empleado en la BD
   const confirmAddEmployee = async () => {
     if (!newEmployeeName.trim()) {
       Alert.alert("Error", "El nombre no puede estar vacío.");
@@ -124,7 +124,7 @@ export default function Empleados() {
 
         <TouchableOpacity
           style={[globalStyles.button, selectedEmployee ? {} : styles.disabledButton]}
-          onPress={handleDelete}
+          onPress={handleDesactivar}
           disabled={!selectedEmployee}
         >
           <Text style={globalStyles.buttonText}>ELIMINAR EMPLEADO</Text>

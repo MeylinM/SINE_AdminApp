@@ -1,6 +1,6 @@
-const API_URL = "https://192.168.10.101:3000/usuario"; // Reemplázalo con la URL real
+const API_URL = "http://192.168.10.101:3000/usuario"; // Reemplázalo con la URL real
 
-// 📌 Obtener todos los empleados desde la base de datos
+// Obtener todos los empleados desde la base de datos
 export const obtenerEmpleados = async () => {
   try {
     const response = await fetch(API_URL);
@@ -13,7 +13,7 @@ export const obtenerEmpleados = async () => {
   }
 };
 
-// 📌 Agregar un nuevo empleado a la base de datos
+// Agregar un nuevo empleado a la base de datos
 export const agregarEmpleado = async (nombre) => {
   try {
     const response = await fetch(API_URL, {
@@ -29,12 +29,16 @@ export const agregarEmpleado = async (nombre) => {
   }
 };
 
-// 📌 Eliminar un empleado de la base de datos
-export const eliminarEmpleado = async (id) => {
+// Eliminar un empleado de la base de datos
+export const desactivarEmpleado = async (id) => {
   try {
-    const response = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
-    if (!response.ok) throw new Error("Error al eliminar empleado");
+    const response = await fetch(`${API_URL}/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ activo: false }), // Marcamos como inactivo
+    });
+    if (!response.ok) throw new Error("Error al desactivar empleado");
   } catch (error) {
-    console.error("Error eliminando empleado:", error);
+    console.error("Error desactivando empleado:", error);
   }
 };
