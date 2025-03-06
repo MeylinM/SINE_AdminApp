@@ -38,19 +38,29 @@ export default StyleSheet.create({
     height: 30, // Aseguramos que el alto sea consistente
   },
   pickerContainer: {
+    marginVertical: 10,
     backgroundColor: "#fff",
     borderRadius: 5,
     borderWidth: 1,
     borderColor: "#ccc",
     width: "25%",
+    alignSelf: "center",
     height: 30, // Asegura que el Picker tenga la misma altura que los inputs
     justifyContent: "center", // Centra el contenido dentro del Picker
   },
-  picker: {
-    height: "100%", // Asegura que el Picker ocupe todo el espacio del contenedor
+  pickerText: {
+    padding:5,
     fontSize: 12,
-    textAlign: "center",
-    fontFamily: "sans-serif",
+    color: "#333",
+    height: "100%",
+  },
+  pickerTouchable: {
+    flexDirection: "row",
+    justifyContent: "space-between", // Asegura que el texto y la flecha estén separados
+    alignItems: "center",
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    width: "100%",
   },
   table: {
     backgroundColor: "white",
