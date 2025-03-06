@@ -68,7 +68,7 @@ export default StyleSheet.create({
     padding: 5, // Reducimos el padding interno de la tabla
     marginBottom: 15, // Menos espacio entre la tabla y los botones
     width: 2000,
-    height: 235,
+    minHeight: "auto",
     borderWidth: 2,
     borderColor: "#019edf",
   },

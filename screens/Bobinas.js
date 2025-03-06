@@ -11,15 +11,17 @@ import styles from "../styles/bobinasStyles";
 import * as ScreenOrientation from "expo-screen-orientation";
 import ModalSelector from "react-native-modal-selector";
 import { Ionicons } from "@expo/vector-icons";
-
+import { generarPDF } from "../utils/ExportarPDF";
+import { exportarExcel } from "../utils/ExportarExcel"; // Importamos la función
 
 export default function Bobinas() {
   const [estadoSeleccionado, setEstadoSeleccionado] = useState("All");
-
+  const [matriculaBusqueda, setMatriculaBusqueda] = useState("");
+  const [empleadoBusqueda, setEmpleadoBusqueda] = useState("");
   const estados = [
     { key: "All", label: "Todos" },
-    { key: "Entregado", label: "Entregado" },
-    { key: "Para Devolver", label: "Para Devolver" },
+    { key: "Recibido", label: "Recibido" },
+    { key: "Para devolver", label: "Para Devolver" },
     { key: "Devuelto", label: "Devuelto" },
   ];
 
@@ -157,12 +159,32 @@ export default function Bobinas() {
     };
   }, []);
 
+  const filteredBobinas = bobinas.filter((bobina) => {
+    const coincideEstado =
+      estadoSeleccionado === "All" || bobina.estado === estadoSeleccionado;
+    const coincideMatricula = bobina.matricula.includes(matriculaBusqueda);
+
+    // Convertimos los valores a minúsculas para una búsqueda insensible a mayúsculas/minúsculas
+    const textoBusqueda = empleadoBusqueda.toLowerCase();
+    const coincideEmpleado =
+      textoBusqueda === "" ||
+      bobina.infoRecogida.empleado.toLowerCase().includes(textoBusqueda) ||
+      bobina.infoDevolucion.empleado.toLowerCase().includes(textoBusqueda) ||
+      bobina.infoConfirmacion.empleado.toLowerCase().includes(textoBusqueda);
+
+    return coincideEstado && coincideMatricula && coincideEmpleado;
+  });
+
   return (
     <View style={styles.container}>
-      
       <Text style={styles.title}>REGISTRO DE BOBINAS</Text>
       <View style={styles.filtersContainer}>
-        <TextInput style={styles.input} placeholder="Buscar por matrícula" />
+        <TextInput
+          style={styles.input}
+          placeholder="Buscar por matrícula"
+          value={matriculaBusqueda}
+          onChangeText={(text) => setMatriculaBusqueda(text)}
+        />
         <View style={styles.pickerContainer}>
           <ModalSelector
             data={estados}
@@ -179,7 +201,12 @@ export default function Bobinas() {
             </TouchableOpacity>
           </ModalSelector>
         </View>
-        <TextInput style={styles.input} placeholder="Buscar por empleado" />
+        <TextInput
+          style={styles.input}
+          placeholder="Buscar por empleado"
+          value={empleadoBusqueda}
+          onChangeText={(text) => setEmpleadoBusqueda(text)}
+        />
       </View>
 
       <ScrollView horizontal>
@@ -220,7 +247,7 @@ export default function Bobinas() {
 
           {/* Renderizar las filas con datos */}
           <ScrollView style={styles.dataScroll} nestedScrollEnabled={true}>
-            {bobinas.map((bobina, index) => (
+            {filteredBobinas.map((bobina, index) => (
               <View key={index} style={styles.row}>
                 <Text style={styles.cell}>{bobina.matricula}</Text>
                 <Text style={styles.cell}>{bobina.almacen}</Text>
@@ -256,10 +283,10 @@ export default function Bobinas() {
       </ScrollView>
 
       <View style={styles.buttonsContainer}>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={() => exportarExcel(filteredBobinas)}>
           <Text style={globalStyles.buttonText}>EXPORTAR TABLA</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={() => generarPDF(filteredBobinas)}>
           <Text style={globalStyles.buttonText}>IMPRIMIR INFORME</Text>
         </TouchableOpacity>
       </View>
