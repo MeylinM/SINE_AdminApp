@@ -12,15 +12,16 @@ export const exportarExcel = async (filteredBobinas) => {
     // 1️⃣ Crear los datos en formato JSON para la hoja de Excel
     let datos = filteredBobinas.map((bobina) => ({
       Matrícula: bobina.matricula,
-      Almacén: bobina.almacen,
-      Descripción: bobina.descripcion,
+      Almacén: bobina.nombre_almacen,
+      OT: bobina.ot,
+      Descripción: bobina.descripcion_obra,
       Estado: bobina.estado,
-      "Recogido por": bobina.infoRecogida.empleado || "-",
-      "Fecha Recogida": bobina.infoRecogida.fechaHora || "-",
-      "Devuelto por": bobina.infoDevolucion.empleado || "-",
-      "Fecha Devolución": bobina.infoDevolucion.fechaHora || "-",
-      "Confirmado por": bobina.infoConfirmacion.empleado || "-",
-      "Fecha Confirmación": bobina.infoConfirmacion.fechaHora || "-",
+      "Recogido por": bobina.empleado1 || "-",
+      "Fecha Recogida": bobina.fecha1 || "-",
+      "Devuelto por": bobina.empleado2 || "-",
+      "Fecha Devolución": bobina.fecha2 || "-",
+      "Confirmado por": bobina.empleado3 || "-",
+      "Fecha Confirmación": bobina.fecha3 || "-",
       Observaciones: bobina.observaciones,
     }));
 
@@ -45,7 +46,9 @@ export const exportarExcel = async (filteredBobinas) => {
     const wbout = XLSX.write(wb, { type: "base64", bookType: "xlsx" });
 
     // 6️⃣ Definir la ruta donde se guardará el archivo en el dispositivo
-    const fileName = `Informe_Bobinas_${new Date().toISOString().replace(/:/g, "-").split(".")[0]}.xlsx`;
+    const fileName = `Informe_Bobinas_${
+      new Date().toISOString().replace(/:/g, "-").split(".")[0]
+    }.xlsx`;
     const fileUri = FileSystem.documentDirectory + fileName;
 
     // 7️⃣ Guardar el archivo en la memoria del dispositivo

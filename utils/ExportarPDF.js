@@ -9,15 +9,16 @@ export const generarPDF = async (filteredBobinas) => {
         (bobina) => `
         <tr>
           <td>${bobina.matricula}</td>
-          <td>${bobina.almacen}</td>
-          <td>${bobina.descripcion}</td>
+          <td>${bobina.nombre_almacen}</td>
+          <td>${bobina.ot}</td>
+          <td>${bobina.descripcion_obra}</td>
           <td>${bobina.estado}</td>
-          <td>${bobina.infoRecogida.empleado || "-"}</td>
-          <td>${bobina.infoRecogida.fechaHora || "-"}</td>
-          <td>${bobina.infoDevolucion.empleado || "-"}</td>
-          <td>${bobina.infoDevolucion.fechaHora || "-"}</td>
-          <td>${bobina.infoConfirmacion.empleado || "-"}</td>
-          <td>${bobina.infoConfirmacion.fechaHora || "-"}</td>
+          <td>${bobina.empleado1 || "-"}</td>
+          <td>${bobina.fecha1 || "-"}</td>
+          <td>${bobina.empleado2 || "-"}</td>
+          <td>${bobina.fecha2 || "-"}</td>
+          <td>${bobina.empleado3 || "-"}</td>
+          <td>${bobina.fecha3 || "-"}</td>
           <td>${bobina.observaciones}</td>
         </tr>
       `
@@ -47,7 +48,8 @@ export const generarPDF = async (filteredBobinas) => {
             <tr>
               <th>Matrícula</th>
               <th>Almacén</th>
-              <th>Descripción</th>
+              <th>OT</th>
+              <th>Descripción de obra</th>
               <th>Estado</th>
               <th>Recogido por</th>
               <th>Fecha Recogida</th>
@@ -67,7 +69,6 @@ export const generarPDF = async (filteredBobinas) => {
     const { uri } = await Print.printToFileAsync({
       html: htmlContent, // Asegura que el PDF use color
     });
-
 
     // Compartir el archivo
     if (await Sharing.isAvailableAsync()) {

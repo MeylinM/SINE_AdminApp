@@ -78,9 +78,9 @@ export default function Bobinas() {
     const textoBusqueda = empleadoBusqueda.toLowerCase();
     const coincideEmpleado =
       textoBusqueda === "" ||
-      bobina.empleado1.toLowerCase().includes(textoBusqueda) ||
-      bobina.empleado2.toLowerCase().includes(textoBusqueda) ||
-      bobina.empleado3.toLowerCase().includes(textoBusqueda);
+      (bobina.empleado1?.toLowerCase() || "").includes(textoBusqueda) ||
+      (bobina.empleado2?.toLowerCase() || "").includes(textoBusqueda) ||
+      (bobina.empleado3?.toLowerCase() || "").includes(textoBusqueda);
 
     return coincideEstado && coincideMatricula && coincideEmpleado;
   });
