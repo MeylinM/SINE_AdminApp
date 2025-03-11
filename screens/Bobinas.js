@@ -6,8 +6,8 @@ import {
   TouchableOpacity,
   TextInput,
   ActivityIndicator,
-  Alert
-  } from "react-native";
+  Alert,
+} from "react-native";
 import globalStyles from "../styles/globalStyles";
 import styles from "../styles/bobinasStyles";
 import * as ScreenOrientation from "expo-screen-orientation";
@@ -15,13 +15,14 @@ import ModalSelector from "react-native-modal-selector";
 import { Ionicons } from "@expo/vector-icons";
 import { generarPDF } from "../utils/ExportarPDF";
 import { exportarExcel } from "../utils/ExportarExcel"; // Importamos la función
-import { obtenerBobinas } from "../services/bobinasService";
+import { obtenerBobinas } from "../services/productoService";
 
 export default function Bobinas() {
   const [estadoSeleccionado, setEstadoSeleccionado] = useState("All");
   const [matriculaBusqueda, setMatriculaBusqueda] = useState("");
   const [empleadoBusqueda, setEmpleadoBusqueda] = useState("");
   const [bobinas, setBobinas] = useState([]); // Lista de bobinas desde la API
+  const [historial, setHistorial] = useState([]); // Lista de registros desde la API
   const [loading, setLoading] = useState(true); // Estado de carga
   const [error, setError] = useState(false); // Estado para manejar errores
 
@@ -77,9 +78,9 @@ export default function Bobinas() {
     const textoBusqueda = empleadoBusqueda.toLowerCase();
     const coincideEmpleado =
       textoBusqueda === "" ||
-      bobina.infoRecogida.empleado.toLowerCase().includes(textoBusqueda) ||
-      bobina.infoDevolucion.empleado.toLowerCase().includes(textoBusqueda) ||
-      bobina.infoConfirmacion.empleado.toLowerCase().includes(textoBusqueda);
+      bobina.empleado1.toLowerCase().includes(textoBusqueda) ||
+      bobina.empleado2.toLowerCase().includes(textoBusqueda) ||
+      bobina.empleado3.toLowerCase().includes(textoBusqueda);
 
     return coincideEstado && coincideMatricula && coincideEmpleado;
   });
@@ -123,6 +124,7 @@ export default function Bobinas() {
           <View style={styles.headerRow}>
             <Text style={styles.headerCell}>MATRÍCULA</Text>
             <Text style={styles.headerCell}>ALMACÉN</Text>
+            <Text style={styles.headerCell}>OT</Text>
             <Text style={styles.headerCell}>DESCRIPCIÓN OBRA</Text>
             <Text style={styles.headerCell}>ESTADO</Text>
 
@@ -158,30 +160,19 @@ export default function Bobinas() {
             {filteredBobinas.map((bobina, index) => (
               <View key={index} style={styles.row}>
                 <Text style={styles.cell}>{bobina.matricula}</Text>
-                <Text style={styles.cell}>{bobina.almacen}</Text>
-                <Text style={styles.cell}>{bobina.descripcion}</Text>
+                <Text style={styles.cell}>{bobina.nombre_almacen}</Text>
+                <Text style={styles.cell}>{bobina.ot}</Text>
+                <Text style={styles.cell}>{bobina.descripcion_obra}</Text>
                 <Text style={styles.cell}>{bobina.estado}</Text>
 
-                <Text style={styles.cell}>
-                  {bobina.infoRecogida.empleado || "-"}
-                </Text>
-                <Text style={styles.cell}>
-                  {bobina.infoRecogida.fechaHora || "-"}
-                </Text>
+                <Text style={styles.cell}>{bobina.empleado1 || "-"}</Text>
+                <Text style={styles.cell}>{bobina.fecha1 || "-"}</Text>
 
-                <Text style={styles.cell}>
-                  {bobina.infoDevolucion.empleado || "-"}
-                </Text>
-                <Text style={styles.cell}>
-                  {bobina.infoDevolucion.fechaHora || "-"}
-                </Text>
+                <Text style={styles.cell}>{bobina.empleado2 || "-"}</Text>
+                <Text style={styles.cell}>{bobina.fecha2 || "-"}</Text>
 
-                <Text style={styles.cell}>
-                  {bobina.infoConfirmacion.empleado || "-"}
-                </Text>
-                <Text style={styles.cell}>
-                  {bobina.infoConfirmacion.fechaHora || "-"}
-                </Text>
+                <Text style={styles.cell}>{bobina.empleado3 || "-"}</Text>
+                <Text style={styles.cell}>{bobina.fecha3 || "-"}</Text>
 
                 <Text style={styles.cell}>{bobina.observaciones}</Text>
               </View>
@@ -189,12 +180,18 @@ export default function Bobinas() {
           </ScrollView>
         </View>
       </ScrollView>
-      
+
       <View style={styles.buttonsContainer}>
-        <TouchableOpacity style={styles.button} onPress={() => exportarExcel(filteredBobinas)}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => exportarExcel(filteredBobinas)}
+        >
           <Text style={globalStyles.buttonText}>EXPORTAR TABLA</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={() => generarPDF(filteredBobinas)}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => generarPDF(filteredBobinas)}
+        >
           <Text style={globalStyles.buttonText}>IMPRIMIR INFORME</Text>
         </TouchableOpacity>
       </View>

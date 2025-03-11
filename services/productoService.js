@@ -1,4 +1,6 @@
-const API_URL = "http://192.168.10.101:3000/producto"; // Reemplaza con la IP de tu servidor
+import HistorialProductos from "../model/producto";
+
+const API_URL = "http://192.168.10.101:3000/historial"; // Reemplaza con la IP de tu servidor
 
 // Obtener todas las bobinas desde la base de datos
 export const obtenerBobinas = async () => {
@@ -8,6 +10,7 @@ export const obtenerBobinas = async () => {
     if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
 
     const data = await response.json();
+    const productos = data.map((row) => HistorialProductos.fromRow(row));
     console.log("Datos obtenidos:", data);
     return data;
   } catch (error) {
@@ -15,7 +18,8 @@ export const obtenerBobinas = async () => {
     return [];
   }
 };
+
 // Exportar función para que se pueda usar en `Bobinas.js`
 export default {
-    obtenerBobinas,
-  };
+  obtenerBobinas,
+};
