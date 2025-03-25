@@ -1,6 +1,6 @@
 import HistorialProductos from "../model/producto";
 
-const API_URL = "http://192.168.10.101:3000/historial"; // Reemplaza con la IP de tu servidor
+const API_URL = "https://sineserver-production.up.railway.app/historial"; // Reemplaza con la IP de tu servidor
 
 // Obtener todas las bobinas desde la base de datos
 export const obtenerBobinas = async () => {

@@ -1,4 +1,4 @@
-const API_URL = "http://192.168.10.101:3000/usuario_producto"; // Reemplaza con la IP de tu servidor
+const API_URL = "https://sineserver-production.up.railway.app/usuario_producto"; // Reemplaza con la IP de tu servidor
 
 //Obtener empleados que se encargaron de las bobinas
 export const obtenerInforme = async () => {

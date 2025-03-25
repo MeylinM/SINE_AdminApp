@@ -1,12 +1,12 @@
 import { Alert } from "react-native";
 
-const API_URL = "http://192.168.10.101:3000/usuario"; // Reemplázalo con la URL real
+const API_URL = "https://sineserver-production.up.railway.app/usuario"; // Reemplázalo con la URL real
 
 // Obtener todos los empleados desde la base de datos
 export const obtenerEmpleados = async () => {
   try {
     console.log("Obteniendo empleados... haciendo petición a:", API_URL);
-    const response = await fetch(API_URL);
+    const response = await fetch(API_URL+"/activos");
     if (!response.ok)
       throw new Error(
         "Error en la respuesta del servidor. Error HTTP:  + ${response.status}"
