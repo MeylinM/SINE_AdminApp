@@ -5,7 +5,7 @@ export default StyleSheet.create({
     position: "absolute", // Se superpone al título
     top: 0, // Arriba
     width: "112%", // La imagen ocupa todo el ancho
-    height: 350, // Ajusta la altura según lo necesites
+    height: 300, // Ajusta la altura según lo necesites
     resizeMode: "cover", // Ajusta sin distorsionarse
     marginBottom: 20, // Acerca la imagen al título
   },
@@ -23,7 +23,7 @@ export default StyleSheet.create({
     borderRadius: 25,
     width: "80%",
     alignItems: "center",
-    marginBottom: 55,
+    marginBottom: 40,
   },
   footer: {
     position: "absolute", // Se superpone al botón
