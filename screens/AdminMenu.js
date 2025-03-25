@@ -27,16 +27,16 @@ export default function AdminMenu() {
 
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate("Bobinas")}
+        onPress={() => navigation.navigate("Almacenes")}
       >
-        <Text style={globalStyles.buttonText}>INFORME DE BOBINAS</Text>
+        <Text style={globalStyles.buttonText}>GESTIONAR ALMACENES</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate("Almacenes")}
+        onPress={() => navigation.navigate("Bobinas")}
       >
-        <Text style={globalStyles.buttonText}>GESTIONAR ALMACENES</Text>
+        <Text style={globalStyles.buttonText}>INFORME DE BOBINAS</Text>
       </TouchableOpacity>
       
       <Text style={styles.footer}>SINE INGENIERIA ELECTRICA</Text>
