@@ -1,5 +1,6 @@
 class HistorialProductos {
   constructor(
+    id,
     matricula,
     nombre_almacen,
     ot,
@@ -13,6 +14,7 @@ class HistorialProductos {
     fecha3,
     observaciones
   ) {
+    (this.id = id),
     (this.matricula = matricula),
       (this.nombre_almacen = nombre_almacen),
       (this.ot = ot),
@@ -29,6 +31,7 @@ class HistorialProductos {
 
   static fromRow(row) {
     return new HistorialProductos(
+      row.id,
       row.matricula,
       row.almacen,
       row.obra,

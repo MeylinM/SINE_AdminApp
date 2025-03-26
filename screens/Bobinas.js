@@ -13,7 +13,7 @@ import styles from "../styles/bobinasStyles";
 import * as ScreenOrientation from "expo-screen-orientation";
 import ModalSelector from "react-native-modal-selector";
 import { Ionicons } from "@expo/vector-icons";
-import { generarPDF } from "../utils/ExportarPDF";
+import { StatusBar } from "react-native";
 import { exportarExcel } from "../utils/ExportarExcel"; // Importamos la función
 import { obtenerBobinas } from "../services/productoService";
 
@@ -122,6 +122,7 @@ export default function Bobinas() {
         <View style={styles.table}>
           {/* Encabezado principal */}
           <View style={styles.headerRow}>
+          <Text style={styles.headerCell}>QR ID</Text>
             <Text style={styles.headerCell}>MATRÍCULA</Text>
             <Text style={styles.headerCell}>ALMACÉN</Text>
             <Text style={styles.headerCell}>OT</Text>
@@ -158,7 +159,9 @@ export default function Bobinas() {
           {/* Renderizar las filas con datos */}
           <ScrollView style={styles.dataScroll} nestedScrollEnabled={true}>
             {filteredBobinas.map((bobina, index) => (
+
               <View key={index} style={styles.row}>
+                <Text style={styles.cell}>{bobina.producto_id}</Text>
                 <Text style={styles.cell}>{bobina.matricula}</Text>
                 <Text style={styles.cell}>{bobina.nombre_almacen}</Text>
                 <Text style={styles.cell}>{bobina.ot}</Text>
@@ -187,12 +190,6 @@ export default function Bobinas() {
           onPress={() => exportarExcel(filteredBobinas)}
         >
           <Text style={globalStyles.buttonText}>EXPORTAR TABLA</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => generarPDF(filteredBobinas)}
-        >
-          <Text style={globalStyles.buttonText}>IMPRIMIR INFORME</Text>
         </TouchableOpacity>
       </View>
     </View>
