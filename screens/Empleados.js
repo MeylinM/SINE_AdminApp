@@ -1,9 +1,21 @@
 import React, { useState, useEffect } from "react";
-import { View, TextInput, FlatList, TouchableOpacity, Text, Alert, Modal } from "react-native";
+import {
+  View,
+  TextInput,
+  FlatList,
+  TouchableOpacity,
+  Text,
+  Alert,
+  Modal,
+} from "react-native";
 import globalStyles from "../styles/globalStyles";
 import styles from "../styles/empleadosStyles";
 import Header from "../components/Header";
-import { obtenerEmpleados, agregarEmpleado, desactivarEmpleado} from "../services/empleadosService";
+import {
+  obtenerEmpleados,
+  agregarEmpleado,
+  desactivarEmpleado,
+} from "../services/empleadosService";
 import * as ScreenOrientation from "expo-screen-orientation";
 
 export default function Empleados() {
@@ -44,27 +56,27 @@ export default function Empleados() {
     setSelectedEmployee(empleado.id === selectedEmployee?.id ? null : empleado);
   };
 
- // Desactivar empleado con confirmación
- const handleDesactivar = async () => {
-  if (!selectedEmployee) return;
+  // Desactivar empleado con confirmación
+  const handleDesactivar = async () => {
+    if (!selectedEmployee) return;
 
-  Alert.alert(
-    "Confirmación",
-    `¿Está seguro de qye quiere eliminar a ${selectedEmployee.nombre}?`,
-    [
-      { text: "Cancelar", style: "cancel" },
-      {
-        text: "Desactivar",
-        style: "destructive",
-        onPress: async () => {
-          await desactivarEmpleado(selectedEmployee.id);
-          await fetchEmpleados(); // Recargamos la lista desde la BD
-          setSelectedEmployee(null);
+    Alert.alert(
+      "Confirmación",
+      `¿Está seguro de que quiere eliminar a ${selectedEmployee.nombre}?`,
+      [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Desactivar",
+          style: "destructive",
+          onPress: async () => {
+            await desactivarEmpleado(selectedEmployee.id);
+            await fetchEmpleados(); // Recargamos la lista desde la BD
+            setSelectedEmployee(null);
+          },
         },
-      },
-    ]
-  );
-};
+      ]
+    );
+  };
 
   // Mostrar modal para agregar un empleado
   const handleAddEmployee = () => {
@@ -92,7 +104,7 @@ export default function Empleados() {
   useEffect(() => {
     ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
   }, []);
-  
+
   return (
     <View style={styles.container}>
       <Header />
@@ -112,7 +124,10 @@ export default function Empleados() {
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
               <TouchableOpacity
-                style={[styles.item, selectedEmployee?.id === item.id ? styles.selectedItem : null]}
+                style={[
+                  styles.item,
+                  selectedEmployee?.id === item.id ? styles.selectedItem : null,
+                ]}
                 onPress={() => handleSelect(item)}
               >
                 <Text>{item.nombre}</Text>
@@ -123,12 +138,18 @@ export default function Empleados() {
       </View>
 
       <View style={styles.buttonsContainer}>
-        <TouchableOpacity style={globalStyles.button} onPress={handleAddEmployee}>
+        <TouchableOpacity
+          style={globalStyles.button}
+          onPress={handleAddEmployee}
+        >
           <Text style={globalStyles.buttonText}>AÑADIR NUEVO EMPLEADO</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[globalStyles.button, selectedEmployee ? {} : styles.disabledButton]}
+          style={[
+            globalStyles.button,
+            selectedEmployee ? {} : styles.disabledButton,
+          ]}
           onPress={handleDesactivar}
           disabled={!selectedEmployee}
         >
@@ -148,7 +169,10 @@ export default function Empleados() {
               onChangeText={setNewEmployeeName}
             />
             <View style={styles.modalButtons}>
-              <TouchableOpacity style={styles.modalButton} onPress={confirmAddEmployee}>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={confirmAddEmployee}
+              >
                 <Text style={styles.buttonText}>Añadir</Text>
               </TouchableOpacity>
               <TouchableOpacity

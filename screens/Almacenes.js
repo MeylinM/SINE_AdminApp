@@ -1,23 +1,43 @@
-import React, { useState } from "react";
-import {View,TextInput,FlatList,TouchableOpacity,Text,Alert,Modal,} from "react-native";
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  TextInput,
+  FlatList,
+  TouchableOpacity,
+  Text,
+  Alert,
+  Modal,
+} from "react-native";
 import globalStyles from "../styles/globalStyles";
-import styles from "../styles/empleadosStyles";
+import styles from "../styles/almacenesStyles";
 import Header from "../components/Header";
-
-const almacenesIniciales = [
-  { id: "1", nombre: "A-01" },
-  { id: "2", nombre: "B-02" },
-  { id: "3", nombre: "C-03" },
-];
+import {
+  obtenerAlmacenes,
+  agregarAlmacen,
+  desactivarAlmacen,
+  modificarAlmacen,
+} from "../services/almacenesService";
+import * as ScreenOrientation from "expo-screen-orientation";
 
 export default function Almacenes() {
   const [search, setSearch] = useState("");
-  const [allAlmacenes, setAllAlmacenes] = useState(almacenesIniciales);
-  const [almacenes, setAlmacenes] = useState(almacenesIniciales);
+  const [allAlmacenes, setAllAlmacenes] = useState([]);
+  const [almacenes, setAlmacenes] = useState([]);
   const [selectedAlmacen, setSelectedAlmacen] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [nuevoNombre, setNuevoNombre] = useState("");
   const [modoEdicion, setModoEdicion] = useState(false);
+
+  useEffect(() => {
+    fetchAlmacenes();
+  }, []);
+
+  // Función para obtener Almacenes de la base de datos
+  const fetchAlmacenes = async () => {
+    const almacenesDB = await obtenerAlmacenes();
+    setAllAlmacenes(almacenesDB);
+    setAlmacenes(almacenesDB);
+  };
 
   const handleSearch = (text) => {
     setSearch(text);
@@ -59,50 +79,43 @@ export default function Almacenes() {
         {
           text: "Eliminar",
           style: "destructive",
-          onPress: () => {
-            const actualizados = allAlmacenes.filter(
-              (a) => a.id !== selectedAlmacen.id
-            );
-            setAllAlmacenes(actualizados);
-            setAlmacenes(actualizados);
-            setSelectedAlmacen(null);
+          onPress: async () => {
+            const ok = await desactivarAlmacen(selectedAlmacen.id);
+            if (ok) {
+              await fetchAlmacenes(); // Recarga desde el servidor
+              setSelectedAlmacen(null);
+            }
           },
         },
       ]
     );
   };
 
-  const handleGuardar = () => {
+  const handleGuardar = async () => {
     if (!nuevoNombre.trim()) {
       Alert.alert("Error", "El nombre no puede estar vacío.");
       return;
     }
 
     if (modoEdicion && selectedAlmacen) {
-      // Modificar
-      const actualizados = allAlmacenes.map((a) =>
-        a.id === selectedAlmacen.id
-          ? { ...a, nombre: nuevoNombre.trim() }
-          : a
-      );
-      setAllAlmacenes(actualizados);
-      setAlmacenes(actualizados);
-      setSelectedAlmacen(null);
+      const ok = await modificarAlmacen(selectedAlmacen.id, nuevoNombre.trim());
+      if (ok) {
+        await fetchAlmacenes();
+        setSelectedAlmacen(null);
+      } else {
+        return;
+      }
     } else {
-      // Añadir
-      const maxId =
-        allAlmacenes.length > 0
-          ? Math.max(...allAlmacenes.map((a) => parseInt(a.id)))
-          : 0;
+      // Añadir con API
+      const nuevo = await agregarAlmacen(nuevoNombre.trim());
 
-      const nuevo = {
-        id: `${maxId + 1}`,
-        nombre: nuevoNombre.trim(),
-      };
-
-      const actualizados = [...allAlmacenes, nuevo];
-      setAllAlmacenes(actualizados);
-      setAlmacenes(actualizados);
+      if (nuevo) {
+        const actualizados = [...allAlmacenes, nuevo];
+        setAllAlmacenes(actualizados);
+        setAlmacenes(actualizados);
+      } else {
+        return; // si falla, no cerramos modal
+      }
     }
 
     setNuevoNombre("");
@@ -110,8 +123,12 @@ export default function Almacenes() {
     setModoEdicion(false);
   };
 
+  useEffect(() => {
+    ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
+  }, []);
+
   return (
-    <View style={globalStyles.container}>
+    <View style={styles.container}>
       <Header />
 
       <TextInput
@@ -143,8 +160,11 @@ export default function Almacenes() {
       </View>
 
       <View style={styles.buttonsContainer}>
-        <TouchableOpacity style={globalStyles.button} onPress={handleAdd}>
-          <Text style={globalStyles.buttonText}>AÑADIR NUEVO ALMACÉN</Text>
+        <TouchableOpacity 
+          style={globalStyles.button} 
+          onPress={handleAdd}>
+          <Text 
+          style={globalStyles.buttonText}>AÑADIR NUEVO ALMACÉN</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -183,7 +203,10 @@ export default function Almacenes() {
               onChangeText={setNuevoNombre}
             />
             <View style={styles.modalButtons}>
-              <TouchableOpacity style={styles.modalButton} onPress={handleGuardar}>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={handleGuardar}
+              >
                 <Text style={styles.buttonText}>
                   {modoEdicion ? "Guardar" : "Añadir"}
                 </Text>
