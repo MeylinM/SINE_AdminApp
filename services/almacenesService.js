@@ -49,6 +49,50 @@ export const agregarAlmacen = async (nombre) => {
   }
 };
 
+//Buscar un almacen por nombre
+export const buscarAlmacenPorNombre = async (nombre) => {
+  try {
+    console.log(`Buscando al almacen: ${nombre}`);
+    const response = await fetch(`${API_URL}/existe/${nombre}`);
+
+    if (response.status === 404) {
+      console.log(`No se ha encontrado ningun almacen llamado: ${nombre}`);
+      return null; // No existe
+    }
+
+    if (!response.ok) {
+      throw new Error(`Error HTTP: ${response.status}`);
+    }
+
+    const almacen = await response.json();
+    return almacen;
+  } catch (error) {
+    console.error("Error buscando almacen:", error);
+    Alert.alert("Error", "No se pudo verificar el nombre del almacen.");
+    return null;
+  }
+};
+//Activar un almacen 
+export const activarAlmacen = async (id) => {
+  try {
+    const response = await fetch(`${API_URL}/activo/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ activo: true }),
+    });
+
+    if (!response.ok)
+      throw new Error(`Error HTTP: ${response.status}`);
+
+    console.log("Almacen reactivado");
+    return true;
+  } catch (error) {
+    console.error("Error reactivando el Almacen:", error);
+    Alert.alert("Error", "No se pudo reactivar el almacen.");
+    return false;
+  }
+};
+
 //Modificar un almacen
 export const modificarAlmacen = async (id, nombre) => {
     try {

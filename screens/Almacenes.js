@@ -16,6 +16,8 @@ import {
   agregarAlmacen,
   desactivarAlmacen,
   modificarAlmacen,
+  activarAlmacen,
+  buscarAlmacenPorNombre,
 } from "../services/almacenesService";
 import * as ScreenOrientation from "expo-screen-orientation";
 
@@ -80,11 +82,9 @@ export default function Almacenes() {
           text: "Eliminar",
           style: "destructive",
           onPress: async () => {
-            const ok = await desactivarAlmacen(selectedAlmacen.id);
-            if (ok) {
-              await fetchAlmacenes(); // Recarga desde el servidor
-              setSelectedAlmacen(null);
-            }
+            await desactivarAlmacen(selectedAlmacen.id);
+            await fetchAlmacenes(); // Recarga desde el servidor
+            setSelectedAlmacen(null); 
           },
         },
       ]
@@ -92,37 +92,84 @@ export default function Almacenes() {
   };
 
   const handleGuardar = async () => {
-    if (!nuevoNombre.trim()) {
+    const nombre = nuevoNombre.trim();
+  
+    if (!nombre) {
       Alert.alert("Error", "El nombre no puede estar vacío.");
       return;
     }
-
+  
+    const existente = await buscarAlmacenPorNombre(nombre);
+  
+    // === AÑADIR NUEVO ALMACÉN ===
+    if (!modoEdicion) {
+      if (existente) {
+        if (existente[0]?.activo === 1) {
+          Alert.alert(
+            "Almacén ya registrado",
+            "Ya existe un almacén con ese nombre y está activo.\n\nPor favor, elige un nombre diferente."
+          );
+        } else {
+          Alert.alert(
+            "Almacén inactivo",
+            `Ya existe un almacén con ese nombre, pero está inactivo.\n\n¿Deseas reactivarlo?`,
+            [
+              { text: "Cancelar", style: "cancel" },
+              {
+                text: "Activar",
+                onPress: async () => {
+                  const ok = await activarAlmacen(existente[0].id);
+                  if (ok) {
+                    await fetchAlmacenes();
+                    setNuevoNombre("");
+                    setModalVisible(false);
+                  }
+                },
+              },
+            ]
+          );
+        }
+        return;
+      }
+  
+      // No existe → proceder a agregar
+      const nuevo = await agregarAlmacen(nombre);
+      if (nuevo) {
+        await fetchAlmacenes();
+        setNuevoNombre("");
+        setModalVisible(false);
+      } else {
+        Alert.alert("Error", "No se pudo agregar el almacén.");
+      }
+      return;
+    }
+  
+    // === MODIFICAR ALMACÉN EXISTENTE ===
     if (modoEdicion && selectedAlmacen) {
-      const ok = await modificarAlmacen(selectedAlmacen.id, nuevoNombre.trim());
+      // Si ya existe con otro ID, no dejar modificar
+      if (existente && existente[0]?.id !== selectedAlmacen.id) {
+        Alert.alert(
+          "Nombre en uso",
+          "Ya existe otro almacén con ese nombre. No se puede modificar."
+        );
+        return;
+      }
+  
+      const ok = await modificarAlmacen(selectedAlmacen.id, nombre);
       if (ok) {
         await fetchAlmacenes();
         setSelectedAlmacen(null);
+        setNuevoNombre("");
+        setModalVisible(false);
       } else {
-        return;
-      }
-    } else {
-      // Añadir con API
-      const nuevo = await agregarAlmacen(nuevoNombre.trim());
-
-      if (nuevo) {
-        const actualizados = [...allAlmacenes, nuevo];
-        setAllAlmacenes(actualizados);
-        setAlmacenes(actualizados);
-      } else {
-        return; // si falla, no cerramos modal
+        Alert.alert("Error", "No se pudo modificar el almacén.");
       }
     }
-
-    setNuevoNombre("");
-    setModalVisible(false);
+  
     setModoEdicion(false);
   };
-
+  
+  
   useEffect(() => {
     ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
   }, []);

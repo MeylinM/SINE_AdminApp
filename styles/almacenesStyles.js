@@ -19,7 +19,7 @@ export default StyleSheet.create({
     width: "90%",
     borderRadius: 10,
     padding: 10,
-    maxHeight: 450, // Evita que la lista crezca demasiado
+    maxHeight: "100%" ,// Evita que la lista crezca demasiado
     borderWidth: 2,
     borderColor: "#019edf", // Borde azul como en el prototipo
   },
