@@ -1,21 +1,9 @@
 import React, { useState, useEffect } from "react";
-import {
-  View,
-  TextInput,
-  FlatList,
-  TouchableOpacity,
-  Text,
-  Alert,
-  Modal,
-} from "react-native";
+import {View,TextInput,FlatList,TouchableOpacity,Text,Alert,Modal,} from "react-native";
 import globalStyles from "../styles/globalStyles";
 import styles from "../styles/empleadosStyles";
 import Header from "../components/Header";
-import {
-  obtenerEmpleados,
-  agregarEmpleado,
-  desactivarEmpleado,
-} from "../services/empleadosService";
+import {obtenerEmpleados,agregarEmpleado,desactivarEmpleado,buscarEmpleadoPorNombre,activarEmpleado,} from "../services/empleadosService";
 import * as ScreenOrientation from "expo-screen-orientation";
 
 export default function Empleados() {
@@ -89,7 +77,39 @@ export default function Empleados() {
       Alert.alert("Error", "El nombre no puede estar vacío.");
       return;
     }
+    // Verificar si ya existe el nombre
 
+    const existente = await buscarEmpleadoPorNombre(newEmployeeName);
+    if (existente) {
+      
+      console.log(existente[0].activo);
+      if (existente[0].activo===1) {
+        Alert.alert(
+          "Empleado ya registrado",
+          "Ya existe un empleado con ese nombre y está activo.\n\nPor favor, introduce nombre y apellido para evitar confusión."
+        );
+      } else {
+        Alert.alert(
+          "Empleado inactivo",
+          `Ya existe un empleado con ese nombre, pero está inactivo.\n\n¿Deseas reactivar a ${existente[0].nombre}?`,
+          [
+            { text: "Cancelar", style: "cancel" },
+            {
+              text: "Activar",
+              onPress: async () => {
+                const ok = await activarEmpleado(existente[0].id);
+                if (ok) {
+                  await fetchEmpleados();
+                  setNewEmployeeName("");
+                  setModalVisible(false);
+                }
+              },
+            },
+          ]
+        );
+      }
+      return;
+    }
     const newEmployee = await agregarEmpleado(newEmployeeName.trim());
 
     if (newEmployee) {

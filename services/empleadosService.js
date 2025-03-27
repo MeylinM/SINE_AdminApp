@@ -26,10 +26,54 @@ export const obtenerEmpleados = async () => {
   }
 };
 
+export const buscarEmpleadoPorNombre = async (nombre) => {
+  try {
+    console.log(`Buscando al empleado: ${nombre}`);
+    const response = await fetch(`${API_URL}/existe/${nombre}`);
+
+    if (response.status === 404) {
+      console.log(`No se ha encontrado ningun empleado llamado: ${nombre}`);
+      return null; // No existe
+    }
+
+    if (!response.ok) {
+      throw new Error(`Error HTTP: ${response.status}`);
+    }
+
+    const empleado = await response.json();
+    return empleado;
+  } catch (error) {
+    console.error("Error buscando empleado:", error);
+    Alert.alert("Error", "No se pudo verificar el nombre del empleado.");
+    return null;
+  }
+};
+
+export const activarEmpleado = async (id) => {
+  try {
+    const response = await fetch(`${API_URL}/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ activo: true }),
+    });
+
+    if (!response.ok)
+      throw new Error(`Error HTTP: ${response.status}`);
+
+    console.log("Empleado reactivado");
+    return true;
+  } catch (error) {
+    console.error("Error reactivando empleado:", error);
+    Alert.alert("Error", "No se pudo reactivar el empleado.");
+    return false;
+  }
+};
+
 // Agregar un nuevo empleado a la base de datos
 export const agregarEmpleado = async (nombre) => {
   try {
-    console.log("Agregando empleado: ${nombre}");
+    console.log(`Agregando empleado: ${nombre}`);
+    console.log(JSON.stringify({ nombre }));
     const response = await fetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -38,7 +82,7 @@ export const agregarEmpleado = async (nombre) => {
 
     if (!response.ok)
       throw new Error(
-        "Error al añadir empleado. Error HTTP: ${response.status}"
+        `Error al añadir empleado. Error HTTP: ${response.status}`
       );
     const newEmployee = await response.json();
     console.log("Empleado agregado:", newEmployee);
