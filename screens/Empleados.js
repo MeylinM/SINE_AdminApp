@@ -91,7 +91,7 @@ export default function Empleados() {
       } else {
         Alert.alert(
           "Empleado inactivo",
-          `Ya existe un empleado con ese nombre, pero está inactivo.\n\n¿Deseas reactivar a ${existente[0].nombre}?`,
+          `Ya existe un empleado con ese nombre, pero está inactivo.\n\n¿Deseas reactivar a ${existente[0].nombre}? Esta accion solo deberia ser llevada a cabo en caso de que el empleado se esté reincorporando a la empresa.`,
           [
             { text: "Cancelar", style: "cancel" },
             {
