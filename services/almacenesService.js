@@ -1,10 +1,10 @@
-const API_URL = "https://sineserver-production.up.railway.app/almacen"; // Reemplázalo con la URL real
+import {ALMACEN_URL} from "../config/config.js";
 
 // Obtener todos los Almacenes desde la base de datos
 export const obtenerAlmacenes = async () => {
   try {
-    console.log("Obteniendo Almacenes... haciendo petición a:", API_URL);
-    const response = await fetch(API_URL+"/activos");
+    console.log("Obteniendo Almacenes... haciendo petición a:", ALMACEN_URL);
+    const response = await fetch(ALMACEN_URL+"/activos");
     if (!response.ok)
       throw new Error(
         "Error en la respuesta del servidor. Error HTTP:  + ${response.status}"
@@ -28,7 +28,7 @@ export const obtenerAlmacenes = async () => {
 export const agregarAlmacen = async (nombre) => {
   try {
     console.log("Agregando Almacen: ${nombre}");
-    const response = await fetch(API_URL, {
+    const response = await fetch(ALMACEN_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ nombre }),
@@ -53,7 +53,7 @@ export const agregarAlmacen = async (nombre) => {
 export const buscarAlmacenPorNombre = async (nombre) => {
   try {
     console.log(`Buscando al almacen: ${nombre}`);
-    const response = await fetch(`${API_URL}/existe/${nombre}`);
+    const response = await fetch(`${ALMACEN_URL}/existe/${nombre}`);
 
     if (response.status === 404) {
       console.log(`No se ha encontrado ningun almacen llamado: ${nombre}`);
@@ -75,7 +75,7 @@ export const buscarAlmacenPorNombre = async (nombre) => {
 //Activar un almacen 
 export const activarAlmacen = async (id) => {
   try {
-    const response = await fetch(`${API_URL}/activo/${id}`, {
+    const response = await fetch(`${ALMACEN_URL}/activo/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ activo: true }),
@@ -96,9 +96,9 @@ export const activarAlmacen = async (id) => {
 //Modificar un almacen
 export const modificarAlmacen = async (id, nombre) => {
     try {
-        console.log(`Haciendo PUT a: ${API_URL}/${id}`);
+        console.log(`Haciendo PUT a: ${ALMACEN_URL}/${id}`);
         console.log(`Modificando el almacen con ID: ${id}`);
-      const response = await fetch(`${API_URL}/${id}`, {
+      const response = await fetch(`${ALMACEN_URL}/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ nombre }),
@@ -120,7 +120,7 @@ export const modificarAlmacen = async (id, nombre) => {
 export const desactivarAlmacen = async (id) => {
   try {
     console.log(`Desactivando empleado con ID: ${id}`);
-    const response = await fetch(`${API_URL}/activo/${id}`, {
+    const response = await fetch(`${ALMACEN_URL}/activo/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ activo: false }), // Marcamos como inactivo

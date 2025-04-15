@@ -1,15 +1,11 @@
-/* General body styling for the web manual */
+/* Estilo base para toda la web */
 body {
   margin: 0;
   padding: 0;
-  font-family: "Segoe UI", sans-serif; /* Modern sans-serif font */
-  background-color: #e1e5e6; /* Light gray background for readability */
-  color: #333; /* Dark text color for contrast */
-  display: flex; /* Flexbox layout for vertical alignment */
-  flex-direction: column; /* Stack elements vertically */
-  align-items: center; /* Center elements horizontally */
-  justify-content: space-between; /* Space between header, content, and footer */
-  min-height: 100vh; /* Ensure the body takes up the full viewport height */
+  font-family: "Segoe UI", sans-serif;
+  background-color: #e1e5e6; /* Fondo gris claro */
+  color: #333; /* Texto oscuro */
+  min-height: 100vh;
 }
 
 /* Header container styling */
@@ -36,13 +32,6 @@ body {
   width: 100%; /* Make the image span the full width of the container */
   height: auto; /* Maintain the aspect ratio */
   object-fit: contain; /* Ensure the entire image is visible */
-}
-
-/* Central content container styling */
-.content {
-  max-width: 800px; /* Limit the width for better readability */
-  padding: 30px; /* Add spacing around the content */
-  text-align: center; /* Center-align the text */
 }
 
 /* Styling for headings inside the central content */

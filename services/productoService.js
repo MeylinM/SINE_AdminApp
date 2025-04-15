@@ -1,12 +1,11 @@
+import {PRODUCTO_URL} from "../config/config"; // Asegúrate de que la ruta sea correcta
 import HistorialProductos from "../model/producto";
-
-const API_URL = "https://sineserver-production.up.railway.app/historial"; // Reemplaza con la IP de tu servidor
 
 // Obtener todas las bobinas desde la base de datos
 export const obtenerBobinas = async () => {
   try {
-    console.log(`Haciendo petición a: ${API_URL}`);
-    const response = await fetch(API_URL);
+    console.log(`Haciendo petición a: ${PRODUCTO_URL}`);
+    const response = await fetch(PRODUCTO_URL);
     if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
 
     const data = await response.json();

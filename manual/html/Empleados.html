@@ -4,46 +4,103 @@
     <meta charset="UTF-8" />
     <title>Gestión de Empleados - Manual SINE</title>
     <link rel="icon" type="image/png" href="../../assets/sine_logo.png" />
+    <link rel="stylesheet" href="../css/empleados.css" />
     <link rel="stylesheet" href="../css/Global.css" />
   </head>
+
   <body>
     <div class="header-image">
       <img src="../../assets/Header.png" alt="Encabezado" />
     </div>
 
-    <h1>GESTIÓN DE EMPLEADOS</h1>
+    <h2>VENTANA PARA GESTIONAR EMPLEADOS</h2>
 
-    <div class="section-box">
-      <h2>¿Qué puedes hacer aquí?</h2>
+    <div class="box-funciones">
+      <p><strong>¿Qué puedes hacer en esta ventana?</strong></p>
       <ul>
         <li>Ver una lista de empleados activos</li>
         <li>Filtrar por nombre en tiempo real</li>
         <li>Añadir nuevos empleados</li>
-        <li>Eliminar (desactivar) empleados</li>
-        <li>Reactivar empleados inactivos</li>
+        <li>Dar de baja a un empleado</li>
+        <li>Re-Incorporar un empleado</li>
       </ul>
     </div>
 
+    <h3>Visualizar empleados</h3>
+    <p class="parrafos">
+      Al entrar en esta sección, verás una lista de empleados registrados
+      actualmente como activos.
+    </p>
+
+    <h4><strong>A.</strong> Todos los empleados</h4>
+    <div class="fila-empleados">
+      <div class="imagen-empleado">
+        <img
+          src="../../assets/empleados_cargados.jpeg"
+          alt="Lista de empleados cargada"
+        />
+      </div>
+      <div class="texto-empleado">
+        <p>
+          En caso de que existan empleados y el proceso se ejecute correctamente
+          se mostrarán los nombres de los empleados en la lista.
+        </p>
+      </div>
+    </div>
+
+    <h4>B. Lista vacía</h4>
+    <div class="fila-empleados">
+      <div class="imagen-empleado">
+        <img
+          src="../../assets/empleados_vacia.jpeg"
+          alt="Lista de empleados vacía"
+        />
+      </div>
+      <div class="texto-empleado">
+        <p>
+          Si la lista aparece vacía y no hay mensajes de error, significa que en
+          este momento no hay empleados registrados en la base de datos.
+        </p>
+      </div>
+    </div>
+
+    <h4>C. Error de conexión</h4>
+    <div class="fila-empleados">
+      <div class="imagen-empleado">
+        <img
+          src="../../assets/empleados_error.jpeg"
+          alt="Mensaje de error de conexión"
+        />
+      </div>
+      <div class="texto-empleado">
+        <p>
+          Si aparece un mensaje de error como este, puede deberse a un problema
+          con el servidor o tu conexión a internet. Verifica tu red y vuelve a
+          intentarlo. Si el problema persiste, contacta con el soporte técnico.
+        </p>
+      </div>
+    </div>
+
     <div class="section-box">
-      <h2>Cómo añadir un empleado</h2>
-      <p>
+      <h3>Cómo añadir un empleado</h3>
+      <p class="parrafos">
         Pulsa en <strong>"AÑADIR NUEVO EMPLEADO"</strong>, escribe el nombre
         completo y confirma.
       </p>
-      <p>Si ya existe un empleado con ese nombre:</p>
-      <ul>
+      <p class="parrafos">Si ya existe un empleado con ese nombre:</p>
+      <ul class="parrafos">
         <li>Si está activo: se mostrará una alerta para evitar duplicados</li>
         <li>Si está inactivo: podrás reactivarlo con un solo clic</li>
       </ul>
     </div>
 
     <div class="section-box">
-      <h2>Eliminar empleados</h2>
-      <p>
+      <h3>Eliminar empleados</h3>
+      <p class="parrafos">
         Selecciona uno de la lista y pulsa en
         <strong>"ELIMINAR EMPLEADO"</strong>.
       </p>
-      <p>Esto no lo borra de la base de datos, solo lo desactiva.</p>
+      <p class="parrafos">Esto no lo borra de la base de datos, solo lo desactiva.</p>
     </div>
     <h2>
       <a href="Index.html">⬅</a>

@@ -1,10 +1,10 @@
-const API_URL = "https://sineserver-production.up.railway.app/usuario_producto"; // Reemplaza con la IP de tu servidor
+import {USUARIO_PRODUCTO_URL} from "../config/config";
 
 //Obtener empleados que se encargaron de las bobinas
 export const obtenerInforme = async () => {
   try{
-    console.log(`Haciendo petición a: ${API_URL}`);
-    const response = await fetch(API_URL);
+    console.log(`Haciendo petición a: ${USUARIO_PRODUCTO_URL}`);
+    const response = await fetch(USUARIO_PRODUCTO_URL);
     if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
 
     const data = await response.json();
