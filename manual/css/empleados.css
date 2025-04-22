@@ -81,11 +81,14 @@ p {
 .fila-empleados {
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   gap: 40px;
   margin: 40px auto;
   max-width: 1000px;
   flex-wrap: wrap;
+}
+.imagen-empleado {
+  margin-left: -400px; /* Alinea con el margen izquierdo del contenido */
 }
 
 .imagen-empleado img {
@@ -97,6 +100,7 @@ p {
 }
 
 .texto-empleado {
+  align-self: flex-start;
   max-width: 500px;
   text-align: justify;
   font-size: 16px;

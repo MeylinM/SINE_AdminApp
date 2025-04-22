@@ -32,4 +32,12 @@ export default StyleSheet.create({
     fontSize: 14,
     color: "#0096FF",
   },
+  infoButton: {
+    position: "absolute",
+    top: 35, // puedes ajustar esto si hay notch o no
+    right: 15,
+    zIndex: 10, // asegúrate de que esté por encima del header
+    backgroundColor: "transparent", // o puedes darle un fondo si lo deseas
+    padding: 8,
+  }
 });
