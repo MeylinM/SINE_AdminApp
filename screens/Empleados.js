@@ -1,125 +1,134 @@
-import React, { useState } from "react"; // Importamos React y el hook useState
-import {
-  View,
-  TextInput,
-  FlatList,
-  TouchableOpacity,
-  Text,
-  Alert,
-  Modal,
-} from "react-native";
-import globalStyles from "../styles/globalStyles"; // Importamos los estilos globales
-import styles from "../styles/empleadosStyles"; // Importamos los estilos específicos de esta pantalla
-import Header from "../components/Header"; // Importamos el Header de la app
-
-// Lista inicial de empleados (creamos 30 empleados con nombres "Nombre 1", "Nombre 2", etc.)
-const empleadosIniciales = Array.from({ length: 30 }, (_, i) => ({
-  id: `${i + 1}`,
-  nombre: `Nombre ${i + 1}`,
-}));
+import React, { useState, useEffect } from "react";
+import {View,TextInput,FlatList,TouchableOpacity,Text,Alert,Modal,} from "react-native";
+import globalStyles from "../styles/globalStyles";
+import styles from "../styles/empleadosStyles";
+import Header from "../components/Header";
+import {obtenerEmpleados,agregarEmpleado,desactivarEmpleado,buscarEmpleadoPorNombre,activarEmpleado,} from "../services/empleadosService";
+import * as ScreenOrientation from "expo-screen-orientation";
 
 export default function Empleados() {
-  // Estado para manejar el texto del filtro de búsqueda
   const [search, setSearch] = useState("");
-
-  // Estado que almacena TODOS los empleados (original y actualizado)
-  const [allEmpleados, setAllEmpleados] = useState(empleadosIniciales);
-
-  // Estado que almacena SOLO los empleados que se están mostrando (según el filtro)
-  const [empleados, setEmpleados] = useState(empleadosIniciales);
-
-  // Estado para manejar el empleado seleccionado (para eliminarlo)
+  const [allEmpleados, setAllEmpleados] = useState([]); // Lista completa desde la BD
+  const [empleados, setEmpleados] = useState([]); // Lista filtrada
   const [selectedEmployee, setSelectedEmployee] = useState(null);
-
-  // Estado para manejar si el modal de añadir empleado está visible
   const [modalVisible, setModalVisible] = useState(false);
-
-  // Estado para almacenar el nombre del nuevo empleado ingresado en el modal
   const [newEmployeeName, setNewEmployeeName] = useState("");
 
-  //  Función para filtrar empleados en tiempo real (cuando el usuario escribe en el buscador)
-  const handleSearch = (text) => {
-    setSearch(text); // Guardamos el texto ingresado en el estado
+  // Cargar empleados al iniciar la pantalla
+  useEffect(() => {
+    fetchEmpleados();
+  }, []);
 
+  // Función para obtener empleados de la base de datos
+  const fetchEmpleados = async () => {
+    const empleadosDB = await obtenerEmpleados();
+    setAllEmpleados(empleadosDB);
+    setEmpleados(empleadosDB);
+  };
+
+  // Filtrar empleados en tiempo real
+  const handleSearch = (text) => {
+    setSearch(text);
     if (text === "") {
-      setEmpleados(allEmpleados); // Si el filtro está vacío, mostramos todos los empleados
+      setEmpleados(allEmpleados);
     } else {
-      const filtered = allEmpleados.filter(
-        (empleado) => empleado.nombre.toLowerCase().includes(text.toLowerCase()) // Buscamos coincidencias sin importar mayúsculas/minúsculas
+      const filtered = allEmpleados.filter((empleado) =>
+        empleado.nombre.toLowerCase().includes(text.toLowerCase())
       );
-      setEmpleados(filtered); // Actualizamos la lista mostrada con los empleados filtrados
+      setEmpleados(filtered);
     }
   };
 
-  //  Función para seleccionar un empleado al hacer clic en él
+  // Seleccionar un empleado
   const handleSelect = (empleado) => {
-    // Si el usuario hace clic en un empleado ya seleccionado, lo deseleccionamos
-    // Si hace clic en otro, lo seleccionamos
     setSelectedEmployee(empleado.id === selectedEmployee?.id ? null : empleado);
   };
 
-  //  Función para eliminar un empleado con una alerta de confirmación
-  const handleDelete = () => {
-    if (!selectedEmployee) return; // Si no hay un empleado seleccionado, no hacemos nada
+  // Desactivar empleado con confirmación
+  const handleDesactivar = async () => {
+    if (!selectedEmployee) return;
 
     Alert.alert(
-      "Confirmación", // Título de la alerta
-      `¿Estás seguro de que deseas eliminar a ${selectedEmployee.nombre}?`, // Mensaje de la alerta
+      "Confirmación",
+      `¿Está seguro de que quiere eliminar a ${selectedEmployee.nombre}?`,
       [
-        { text: "Cancelar", style: "cancel" }, // Opción para cancelar la eliminación
+        { text: "Cancelar", style: "cancel" },
         {
-          text: "Eliminar",
+          text: "Desactivar",
           style: "destructive",
-          onPress: () => {
-            // Filtramos la lista para quitar el empleado seleccionado
-            const updatedList = allEmpleados.filter(
-              (emp) => emp.id !== selectedEmployee.id
-            );
-            setAllEmpleados(updatedList); // Actualizamos la lista completa
-            setEmpleados(updatedList); // También actualizamos la lista mostrada
-            setSelectedEmployee(null); // Deseleccionamos el empleado
+          onPress: async () => {
+            await desactivarEmpleado(selectedEmployee.id);
+            await fetchEmpleados(); // Recargamos la lista desde la BD
+            setSelectedEmployee(null);
           },
         },
       ]
     );
   };
 
-  //  Función que se ejecuta al presionar el botón "AÑADIR NUEVO EMPLEADO"
+  // Mostrar modal para agregar un empleado
   const handleAddEmployee = () => {
-    setModalVisible(true); // Mostramos el modal para ingresar el nombre del nuevo empleado
+    setModalVisible(true);
   };
 
-  //  Función que añade el nuevo empleado a la lista
-  const confirmAddEmployee = () => {
+  // Confirmar y agregar nuevo empleado en la BD
+  const confirmAddEmployee = async () => {
     if (!newEmployeeName.trim()) {
-      Alert.alert("Error", "El nombre no puede estar vacío."); // Mostramos un error si el nombre está vacío
+      Alert.alert("Error", "El nombre no puede estar vacío.");
       return;
     }
+    // Verificar si ya existe el nombre
 
-    // Buscamos el ID más alto en la lista y le sumamos 1 para el nuevo empleado
-    const maxId =
-      allEmpleados.length > 0
-        ? Math.max(...allEmpleados.map((e) => parseInt(e.id)))
-        : 0;
-    const newEmployee = {
-      id: `${maxId + 1}`, // Generamos un ID único
-      nombre: newEmployeeName.trim(), // Guardamos el nombre sin espacios extra
-    };
+    const existente = await buscarEmpleadoPorNombre(newEmployeeName);
+    if (existente) {
+      
+      console.log(existente[0].activo);
+      if (existente[0].activo===1) {
+        Alert.alert(
+          "Empleado ya registrado",
+          "Ya existe un empleado con ese nombre y está activo.\n\nPor favor, introduce nombre y apellido para evitar confusión."
+        );
+      } else {
+        Alert.alert(
+          "Empleado inactivo",
+          `Ya existe un empleado con ese nombre, pero está inactivo.\n\n¿Deseas reactivar a ${existente[0].nombre}? Esta accion solo deberia ser llevada a cabo en caso de que el empleado se esté reincorporando a la empresa.`,
+          [
+            { text: "Cancelar", style: "cancel" },
+            {
+              text: "Activar",
+              onPress: async () => {
+                const ok = await activarEmpleado(existente[0].id);
+                if (ok) {
+                  await fetchEmpleados();
+                  setNewEmployeeName("");
+                  setModalVisible(false);
+                }
+              },
+            },
+          ]
+        );
+      }
+      return;
+    }
+    const newEmployee = await agregarEmpleado(newEmployeeName.trim());
 
-    const updatedList = [...allEmpleados, newEmployee]; // Agregamos el nuevo empleado a la lista
-
-    setAllEmpleados(updatedList); // Actualizamos la lista completa
-    setEmpleados(updatedList); // También actualizamos la lista mostrada para que el nuevo empleado aparezca
-    setNewEmployeeName(""); // Limpiamos el input del modal
-    setModalVisible(false); // Cerramos el modal
+    if (newEmployee) {
+      await fetchEmpleados(); // Recargamos la lista desde la BD
+      setNewEmployeeName("");
+      setModalVisible(false);
+    } else {
+      Alert.alert("Error", "No se pudo agregar el empleado.");
+    }
   };
+
+  useEffect(() => {
+    ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
+  }, []);
 
   return (
     <View style={styles.container}>
-      {/* Header fijo arriba */}
       <Header />
 
-      {/* Barra de búsqueda */}
       <TextInput
         style={globalStyles.input}
         placeholder="Filtrar por nombre"
@@ -127,18 +136,17 @@ export default function Empleados() {
         onChangeText={handleSearch}
       />
 
-      {/* Contenedor de la lista de empleados con scroll */}
       <View style={styles.listWrapper}>
         <View style={styles.listContainer}>
           <Text style={styles.header}>EMPLEADOS</Text>
           <FlatList
-            data={empleados} // Usamos la lista filtrada
-            keyExtractor={(item) => item.id} // Usamos el ID como clave única
+            data={empleados}
+            keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
               <TouchableOpacity
                 style={[
                   styles.item,
-                  selectedEmployee?.id === item.id ? styles.selectedItem : null, // Resaltamos si está seleccionado
+                  selectedEmployee?.id === item.id ? styles.selectedItem : null,
                 ]}
                 onPress={() => handleSelect(item)}
               >
@@ -149,9 +157,7 @@ export default function Empleados() {
         </View>
       </View>
 
-      {/* Botones Fijos Abajo */}
       <View style={styles.buttonsContainer}>
-        {/* Botón para añadir un nuevo empleado */}
         <TouchableOpacity
           style={globalStyles.button}
           onPress={handleAddEmployee}
@@ -159,13 +165,12 @@ export default function Empleados() {
           <Text style={globalStyles.buttonText}>AÑADIR NUEVO EMPLEADO</Text>
         </TouchableOpacity>
 
-        {/* Botón de eliminar (deshabilitado si no hay un empleado seleccionado) */}
         <TouchableOpacity
           style={[
             globalStyles.button,
             selectedEmployee ? {} : styles.disabledButton,
           ]}
-          onPress={handleDelete}
+          onPress={handleDesactivar}
           disabled={!selectedEmployee}
         >
           <Text style={globalStyles.buttonText}>ELIMINAR EMPLEADO</Text>

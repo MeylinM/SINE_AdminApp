@@ -1,0 +1,74 @@
+/* Estilo base para toda la web */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", sans-serif;
+  background-color: #e1e5e6; /* Fondo gris claro */
+  color: #333; /* Texto oscuro */
+  min-height: 100vh;
+}
+
+/* Header container styling */
+.header-image {
+  margin-bottom: -45px; /* Overlap the header image slightly with the content */
+}
+
+/* Styling for the header image */
+.header-image img {
+  width: 100%; /* Make the image span the full width of the container */
+  height: auto; /* Maintain the aspect ratio */
+  object-fit: cover; /* Ensure the image covers the container */
+}
+
+/* Footer container styling */
+.footer-image {
+  height: 60px; /* Fixed height for the footer */
+  width: 100%; /* Full width of the container */
+  overflow: hidden; /* Hide any overflowing content */
+}
+
+/* Styling for the footer image */
+.footer-image img {
+  width: 100%; /* Make the image span the full width of the container */
+  height: auto; /* Maintain the aspect ratio */
+  object-fit: contain; /* Ensure the entire image is visible */
+}
+
+/* Styling for headings inside the central content */
+.content h2 {
+  color: #019edf; /* Bright blue color for headings */
+  font-size: 28px; /* Large font size for emphasis */
+  margin-bottom: 10px; /* Add spacing below the heading */
+}
+
+/* Styling for paragraphs inside the central content */
+.content p {
+  font-size: 16px; /* Standard font size for body text */
+  line-height: 1.6; /* Improve readability with proper line spacing */
+  margin-bottom: 20px; /* Add spacing below paragraphs */
+}
+
+/* Navigation links styling */
+.nav-links {
+  list-style: none; /* Remove default bullet points */
+  padding: 0; /* Remove default padding */
+}
+
+/* Styling for individual navigation list items */
+.nav-links li {
+  margin: 12px 0; /* Add vertical spacing between links */
+}
+
+/* Styling for navigation links */
+.nav-links a {
+  color: #019edf; /* Bright blue color for links */
+  padding: 12px 20px; /* Add padding for clickable area */
+  border-radius: 12px; /* Rounded corners for links */
+  display: inline-block; /* Ensure padding applies to the entire link */
+  transition: background-color 0.2s ease; /* Smooth hover effect */
+}
+
+/* Hover effect for navigation links */
+.nav-links a:hover {
+  color: #6dc8ef; /* Lighter blue color on hover */
+}

@@ -1,0 +1,14 @@
+/* General body styling for the web manual */
+body {
+  display: flex; /* Flexbox layout for vertical alignment */
+  flex-direction: column; /* Stack elements vertically */
+  align-items: center; /* Center elements horizontally */
+  justify-content: space-between; /* Space between header, content, and footer */
+}
+
+/* Central content container styling */
+.content {
+    max-width: 800px; /* Limit the width for better readability */
+    padding: 30px; /* Add spacing around the content */
+    text-align: center; /* Center-align the text */
+  }
