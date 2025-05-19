@@ -1,76 +1,68 @@
-import React from "react";
-import { View, Text, Image, ScrollView } from "react-native";
-import globalHelpStyles from "./style/global";
-import empleadosStyles from "./style/empleados";
-import { useNavigation } from "@react-navigation/native";
 
-export default function AyudaAlmacenes() {
-  const navigation = useNavigation();
+import React from "react"; // Importamos React para poder crear componentes
+import { View, Text, Image, ScrollView } from "react-native"; // Componentes básicos de React Native
+import globalHelpStyles from "./style/global"; // Estilos generales del sistema de ayuda
+import empleadosStyles from "./style/empleados"; // Estilos específicos para esta pantalla
+import { useNavigation } from "@react-navigation/native"; // Hook para navegar entre pantallas (aunque aquí no se usa directamente)
+
+export default function AyudaEmpleados() {
+  const navigation = useNavigation(); // Hook para poder usar navegación (aunque en esta pantalla no se usa)
 
   return (
     <View style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-        {/* HEADER */}
+        
+        {/* Imagen del encabezado (header) */}
         <Image
           source={require("../assets/Header.png")}
           style={globalHelpStyles.headerImage}
           resizeMode="cover"
         />
 
-        {/* CONTENIDO */}
+        {/* Contenedor principal del contenido de ayuda */}
         <View style={empleadosStyles.content}>
-          {/* TÍTULO PRINCIPAL */}
+          
+          {/* Título principal */}
           <Text style={globalHelpStyles.title}>
             VENTANA PARA GESTIONAR ALMACENES
           </Text>
 
-          {/* SECCIÓN: ¿Qué puedes hacer...? */}
+          {/* Bloque: Qué puedes hacer en esta ventana */}
           <View style={empleadosStyles.box}>
             <Text style={empleadosStyles.boxTitle}>
               ¿Qué puedes hacer en esta ventana?
             </Text>
             <View style={globalHelpStyles.list}>
-              <Text style={globalHelpStyles.listItem}>
-                • Ver una lista de los almacenes
-              </Text>
-              <Text style={globalHelpStyles.listItem}>
-                • Filtrar por nombre en tiempo real
-              </Text>
-              <Text style={globalHelpStyles.listItem}>
-                • Añadir almacenes 
-              </Text>
-              <Text style={globalHelpStyles.listItem}>
-                • Modificar el nombre de un Almacén
-              </Text>
-              <Text style={globalHelpStyles.listItem}>
-                • Eliminar un almacén
-              </Text>
+              <Text style={globalHelpStyles.listItem}>• Ver una lista de los alamcenes activos</Text>
+              <Text style={globalHelpStyles.listItem}>• Filtrar por nombre en tiempo real</Text>
+              <Text style={globalHelpStyles.listItem}>• Añadir nuevos alamcenes</Text>
+              <Text style={globalHelpStyles.listItem}>• Desactivar un almacen</Text>
+              <Text style={globalHelpStyles.listItem}>• Volver a activar un almacen</Text>
+              <Text style={globalHelpStyles.listItem}>• Modificar el nombre de un almacen</Text>
             </View>
           </View>
 
-          {/* SECCIÓN: Visualizar empleados */}
-          <Text style={globalHelpStyles.subtitle}>Visualizar Almacenes</Text>
+          {/* Subtítulo: Visualizar empleados */}
+          <Text style={globalHelpStyles.subtitle}>Visualizar alamcenes</Text>
           <Text style={globalHelpStyles.paragraph}>
-            Al entrar en esta sección, verás una lista de almacenes.
+            Al entrar en esta sección, verás una lista de los alamcenes registrados actualmente como activos.
           </Text>
 
-          {/* SUBSECCIÓN A */}
+          {/* Subsección A: Lista con alamcenes */}
           <Text style={empleadosStyles.subheader}>
-            <Text style={globalHelpStyles.bold}>A.</Text> Todos los Almacenes
+            <Text style={globalHelpStyles.bold}>A.</Text> Todos los alamcenes
           </Text>
           <View style={empleadosStyles.row}>
             <Image
-              source={require("../assets/empleados_cargados.jpeg")}
+              source={require("../assets/almacenes_cargados.jpeg")}
               style={empleadosStyles.image}
             />
             <Text style={empleadosStyles.text}>
-              En caso de que existan almacenes y el proceso se ejecute
-              correctamente, se mostrarán los nombres de los almacenes en la
-              lista.
+              Si todo funciona correctamente, se mostrarán los nombres de los alamcenes en la lista.
             </Text>
           </View>
 
-          {/* SUBSECCIÓN B */}
+          {/* Subsección B: Lista vacía */}
           <Text style={empleadosStyles.subheader}>
             <Text style={globalHelpStyles.bold}>B.</Text> Lista vacía
           </Text>
@@ -80,13 +72,11 @@ export default function AyudaAlmacenes() {
               style={empleadosStyles.image}
             />
             <Text style={empleadosStyles.text}>
-              Si la lista aparece vacía y no hay mensajes de error, significa
-              que en este momento no hay almacenes registrados en la base de
-              datos.
+              Si la lista aparece vacía y no hay errores, simplemente no hay empleados registrados en la base de datos.
             </Text>
           </View>
 
-          {/* SUBSECCIÓN C */}
+          {/* Subsección C: Error */}
           <Text style={empleadosStyles.subheader}>
             <Text style={globalHelpStyles.bold}>C.</Text> Error de conexión
           </Text>
@@ -96,51 +86,71 @@ export default function AyudaAlmacenes() {
               style={empleadosStyles.image}
             />
             <Text style={empleadosStyles.text}>
-              Si aparece un mensaje de error como este, puede deberse a un
-              problema con el servidor o tu conexión a internet. Verifica tu red
-              y vuelve a intentarlo. Si el problema persiste, contacta con el
-              soporte técnico.
+              Si ves un error como este, revisa tu conexión a internet o contacta con soporte técnico.
             </Text>
           </View>
 
-          {/* SECCIÓN: Añadir empleados */}
-          <Text style={globalHelpStyles.subtitle}>
-            ¿Cómo añadir un Almacén?
-          </Text>
+          {/* Cómo añadir un nuevo empleado */}
+          <Text style={globalHelpStyles.subtitle}>¿Cómo añadir un empleado?</Text>
           <Text style={globalHelpStyles.paragraph}>
-            Pulsa en{" "}
-            <Text style={globalHelpStyles.bold}>AÑADIR NUEVO ALMACÉN</Text>,
-            escribe el nombre y confirma.
+            Pulsa en <Text style={globalHelpStyles.bold}>AÑADIR NUEVO EMPLEADO</Text>.
           </Text>
-          <Text style={globalHelpStyles.paragraph}>
-            Si ya existe un almacén con ese nombre:
-          </Text>
-          <View style={globalHelpStyles.list}>
-            <Text style={globalHelpStyles.listItem}>
-              • Si está activo: se mostrará una alerta para evitar duplicados
-            </Text>
-            <Text style={globalHelpStyles.listItem}>
-              • Si está inactivo: podrás reactivarlo con un solo clic
+          <View style={empleadosStyles.row}>
+            <Image
+              source={require("../assets/AddEmployee_1.jpeg")}
+              style={empleadosStyles.image}
+            />
+            <Text style={empleadosStyles.text}>
+              Escribe el nombre completo del nuevo empleado y confirma.
             </Text>
           </View>
-          
-          {/* SECCIÓN: Eliminar */}
-          <Text style={globalHelpStyles.subtitle}>Eliminar Almacenes</Text>
+
           <Text style={globalHelpStyles.paragraph}>
-            Selecciona uno de la lista y pulsa en{" "}
-            <Text style={globalHelpStyles.bold}>ELIMINAR ALMACÉN</Text>.
+            Si todo va bien, aparecerá en la lista automáticamente.
+          </Text>
+          <Text style={globalHelpStyles.paragraph}>
+            <Text style={globalHelpStyles.bold}>¿Qué pasa si ya existe un empleado con ese nombre?</Text>
           </Text>
 
-          {/* ENLACE DE VOLVER */}
-          <Text
-            style={empleadosStyles.back}
-            onPress={() => navigation.navigate("IndexHelp")}
-          >
-            ⬅
+          {/* Ya existe - Activo */}
+          <View style={empleadosStyles.row}>
+            <Image
+              source={require("../assets/AddEmployee_2.jpeg")}
+              style={empleadosStyles.image}
+            />
+            <Text style={empleadosStyles.text}>
+              <Text style={globalHelpStyles.bold}>• Si está activo:</Text> Se mostrará una alerta para evitar duplicados.
+            </Text>
+          </View>
+
+          {/* Ya existe - Inactivo */}
+          <View style={empleadosStyles.row}>
+            <Image
+              source={require("../assets/AddEmployee_3.jpeg")}
+              style={empleadosStyles.image}
+            />
+            <Text style={empleadosStyles.text}>
+               <Text style={globalHelpStyles.bold}>• Si está inactivo:</Text> Podrás reactivarlo con un solo clic.
+            </Text>
+          </View>
+
+          {/* Cómo eliminar empleados */}
+          <Text style={globalHelpStyles.subtitle}>Eliminar empleados</Text>
+          <Text style={globalHelpStyles.paragraph}>
+            Selecciona un empleado y pulsa en <Text style={globalHelpStyles.bold}>ELIMINAR EMPLEADO</Text>.
           </Text>
+          <View style={empleadosStyles.row}>
+            <Image
+              source={require("../assets/DeleteEmployee_1.jpeg")}
+              style={empleadosStyles.image}
+            />
+            <Text style={empleadosStyles.text}>
+              Aparecerá una alerta para confirmar la eliminación.
+            </Text>
+          </View>
         </View>
 
-        {/* FOOTER */}
+        {/* Imagen del pie de página (footer) */}
         <Image
           source={require("../assets/Footer.png")}
           style={globalHelpStyles.footerImage}
