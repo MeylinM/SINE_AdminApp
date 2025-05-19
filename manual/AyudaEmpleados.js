@@ -110,8 +110,19 @@ export default function AyudaEmpleados() {
           </Text>
           <Text style={globalHelpStyles.paragraph}>
             Pulsa en{" "}
-            <Text style={globalHelpStyles.bold}>AÑADIR NUEVO EMPLEADO</Text>,
-            escribe el nombre completo y confirma.
+            <Text style={globalHelpStyles.bold}>AÑADIR NUEVO EMPLEADO.</Text>,
+          </Text>
+          <View style={empleadosStyles.row}>
+            <Image
+              source={require("../assets/A")}  
+              style={empleadosStyles.image}
+            />
+            <Text style={empleadosStyles.text}>
+              Escribe el nombre completo y confirma.
+            </Text>
+          </View>
+          <Text style={globalHelpStyles.paragraph}>
+            Si el proceso se ejecuta correctamente el empleado aparecerá en la lista
           </Text>
           <Text style={globalHelpStyles.paragraph}>
             Si ya existe un empleado con ese nombre:

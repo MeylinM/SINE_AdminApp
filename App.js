@@ -23,6 +23,7 @@ export default function App() {
         <Stack.Screen name="IndexHelp" component={IndexHelp} />
         <Stack.Screen name="AyudaEmpleados" component={AyudaEmpleados} />
         <Stack.Screen name="AyudaAlmacenes" component={AyudaAlmacenes} />
+        <Stack.Screen name="AyudaBobinas" component={AyudaBobinas} />
       </Stack.Navigator>
     </NavigationContainer>
   );
