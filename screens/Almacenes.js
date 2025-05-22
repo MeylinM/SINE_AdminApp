@@ -1,3 +1,10 @@
+/**
+ * @file Almacenes.js
+ * @description Pantalla para la gestión de almacenes dentro de la app.
+ * Permite añadir, modificar, eliminar, reactivar y buscar almacenes.
+ * Utiliza una base de datos remota y actualiza los datos en tiempo real.
+ */
+
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -8,9 +15,9 @@ import {
   Alert,
   Modal,
 } from "react-native";
-import globalStyles from "../styles/globalStyles";
-import styles from "../styles/almacenesStyles";
-import Header from "../components/Header";
+import globalStyles from "../styles/globalStyles"; // Estilos compartidos
+import styles from "../styles/almacenesStyles"; // Estilos específicos para esta pantalla
+import Header from "../components/Header"; // Encabezado común
 import {
   obtenerAlmacenes,
   agregarAlmacen,
@@ -18,29 +25,33 @@ import {
   modificarAlmacen,
   activarAlmacen,
   buscarAlmacenPorNombre,
-} from "../services/almacenesService";
-import * as ScreenOrientation from "expo-screen-orientation";
+} from "../services/almacenesService"; // Funciones que interactúan con el servidor
+import * as ScreenOrientation from "expo-screen-orientation"; // Para bloquear orientación
 
 export default function Almacenes() {
-  const [search, setSearch] = useState("");
-  const [allAlmacenes, setAllAlmacenes] = useState([]);
-  const [almacenes, setAlmacenes] = useState([]);
-  const [selectedAlmacen, setSelectedAlmacen] = useState(null);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [nuevoNombre, setNuevoNombre] = useState("");
-  const [modoEdicion, setModoEdicion] = useState(false);
+  // === ESTADOS ===
+  const [search, setSearch] = useState(""); // Texto de búsqueda
+  const [allAlmacenes, setAllAlmacenes] = useState([]); // Lista completa de almacenes
+  const [almacenes, setAlmacenes] = useState([]); // Lista visible (filtrada)
+  const [selectedAlmacen, setSelectedAlmacen] = useState(null); // Almacén seleccionado
+  const [modalVisible, setModalVisible] = useState(false); // Mostrar/ocultar modal
+  const [nuevoNombre, setNuevoNombre] = useState(""); // Nombre nuevo/edición
+  const [modoEdicion, setModoEdicion] = useState(false); // ¿Estamos editando?
 
+  // Al iniciar, se bloquea orientación y se cargan almacenes
   useEffect(() => {
+    ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
     fetchAlmacenes();
   }, []);
 
-  // Función para obtener Almacenes de la base de datos
+  // Función para cargar almacenes desde la base de datos
   const fetchAlmacenes = async () => {
     const almacenesDB = await obtenerAlmacenes();
     setAllAlmacenes(almacenesDB);
     setAlmacenes(almacenesDB);
   };
 
+  // Filtrado en tiempo real
   const handleSearch = (text) => {
     setSearch(text);
     if (text === "") {
@@ -53,16 +64,19 @@ export default function Almacenes() {
     }
   };
 
+  // Seleccionar un almacén (deselecciona si ya estaba seleccionado)
   const handleSelect = (almacen) => {
     setSelectedAlmacen(almacen.id === selectedAlmacen?.id ? null : almacen);
   };
 
+  // Abrir modal para añadir
   const handleAdd = () => {
     setModoEdicion(false);
     setNuevoNombre("");
     setModalVisible(true);
   };
 
+  // Abrir modal para modificar
   const handleModificar = () => {
     if (!selectedAlmacen) return;
     setModoEdicion(true);
@@ -70,6 +84,7 @@ export default function Almacenes() {
     setModalVisible(true);
   };
 
+  // Eliminar (desactivar) un almacén
   const handleEliminar = () => {
     if (!selectedAlmacen) return;
 
@@ -83,36 +98,37 @@ export default function Almacenes() {
           style: "destructive",
           onPress: async () => {
             await desactivarAlmacen(selectedAlmacen.id);
-            await fetchAlmacenes(); // Recarga desde el servidor
-            setSelectedAlmacen(null); 
+            await fetchAlmacenes();
+            setSelectedAlmacen(null);
           },
         },
       ]
     );
   };
 
+  // Guardar nuevo o modificar almacén
   const handleGuardar = async () => {
     const nombre = nuevoNombre.trim();
-  
+
     if (!nombre) {
       Alert.alert("Error", "El nombre no puede estar vacío.");
       return;
     }
-  
+
     const existente = await buscarAlmacenPorNombre(nombre);
-  
-    // === AÑADIR NUEVO ALMACÉN ===
+
+    // === AÑADIR ===
     if (!modoEdicion) {
       if (existente) {
         if (existente[0]?.activo === 1) {
           Alert.alert(
             "Almacén ya registrado",
-            "Ya existe un almacén con ese nombre y está activo.\n\nPor favor, elige un nombre diferente."
+            "Ya existe un almacén con ese nombre y está activo."
           );
         } else {
           Alert.alert(
             "Almacén inactivo",
-            `Ya existe un almacén con ese nombre, pero está inactivo.\n\n¿Deseas reactivarlo?`,
+            "Ya existe un almacén con ese nombre, pero está inactivo.\n¿Deseas reactivarlo?",
             [
               { text: "Cancelar", style: "cancel" },
               {
@@ -131,8 +147,8 @@ export default function Almacenes() {
         }
         return;
       }
-  
-      // No existe → proceder a agregar
+
+      // No existe → crear nuevo
       const nuevo = await agregarAlmacen(nombre);
       if (nuevo) {
         await fetchAlmacenes();
@@ -143,10 +159,9 @@ export default function Almacenes() {
       }
       return;
     }
-  
-    // === MODIFICAR ALMACÉN EXISTENTE ===
+
+    // === MODIFICAR ===
     if (modoEdicion && selectedAlmacen) {
-      // Si ya existe con otro ID, no dejar modificar
       if (existente && existente[0]?.id !== selectedAlmacen.id) {
         Alert.alert(
           "Nombre en uso",
@@ -154,7 +169,7 @@ export default function Almacenes() {
         );
         return;
       }
-  
+
       const ok = await modificarAlmacen(selectedAlmacen.id, nombre);
       if (ok) {
         await fetchAlmacenes();
@@ -165,19 +180,16 @@ export default function Almacenes() {
         Alert.alert("Error", "No se pudo modificar el almacén.");
       }
     }
-  
+
     setModoEdicion(false);
   };
-  
-  
-  useEffect(() => {
-    ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
-  }, []);
 
+  // === VISTA ===
   return (
     <View style={styles.container}>
       <Header />
 
+      {/* Buscador */}
       <TextInput
         style={globalStyles.input}
         placeholder="Filtrar por nombre"
@@ -185,6 +197,7 @@ export default function Almacenes() {
         onChangeText={handleSearch}
       />
 
+      {/* Lista de almacenes */}
       <View style={styles.listWrapper}>
         <View style={styles.listContainer}>
           <Text style={styles.header}>ALMACENES</Text>
@@ -206,12 +219,10 @@ export default function Almacenes() {
         </View>
       </View>
 
+      {/* Botones de acción */}
       <View style={styles.buttonsContainer}>
-        <TouchableOpacity 
-          style={globalStyles.button} 
-          onPress={handleAdd}>
-          <Text 
-          style={globalStyles.buttonText}>AÑADIR NUEVO ALMACÉN</Text>
+        <TouchableOpacity style={globalStyles.button} onPress={handleAdd}>
+          <Text style={globalStyles.buttonText}>AÑADIR NUEVO ALMACÉN</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -237,6 +248,7 @@ export default function Almacenes() {
         </TouchableOpacity>
       </View>
 
+      {/* Modal para añadir/modificar */}
       <Modal visible={modalVisible} animationType="slide" transparent={true}>
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
@@ -250,10 +262,7 @@ export default function Almacenes() {
               onChangeText={setNuevoNombre}
             />
             <View style={styles.modalButtons}>
-              <TouchableOpacity
-                style={styles.modalButton}
-                onPress={handleGuardar}
-              >
+              <TouchableOpacity style={styles.modalButton} onPress={handleGuardar}>
                 <Text style={styles.buttonText}>
                   {modoEdicion ? "Guardar" : "Añadir"}
                 </Text>
