@@ -8,12 +8,15 @@
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.hodeicloud.sineadminapp",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -21,7 +24,7 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.hodeicloud.sineadminapp",
-      "label": "SINE Admin"  
+      "label": "SINE Admin"
     },
     "web": {
       "favicon": "./assets/favicon.png"

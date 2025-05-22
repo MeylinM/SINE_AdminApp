@@ -1,32 +1,63 @@
+/**
+ * @file Empleados.js
+ * @description Pantalla para la gestión de empleados.
+ * Permite ver, buscar, añadir, desactivar y reactivar empleados con lógica contra duplicados.
+ */
+
 import React, { useState, useEffect } from "react";
-import {View,TextInput,FlatList,TouchableOpacity,Text,Alert,Modal,} from "react-native";
+import {
+  View,
+  TextInput,
+  FlatList,
+  TouchableOpacity,
+  Text,
+  Alert,
+  Modal,
+} from "react-native";
+
 import globalStyles from "../styles/globalStyles";
 import styles from "../styles/empleadosStyles";
 import Header from "../components/Header";
-import {obtenerEmpleados,agregarEmpleado,desactivarEmpleado,buscarEmpleadoPorNombre,activarEmpleado,} from "../services/empleadosService";
+
+import {
+  obtenerEmpleados,
+  agregarEmpleado,
+  desactivarEmpleado,
+  buscarEmpleadoPorNombre,
+  activarEmpleado,
+} from "../services/empleadosService";
+
 import * as ScreenOrientation from "expo-screen-orientation";
 
+/**
+ * Componente principal de la pantalla de empleados.
+ * Contiene filtros, lista dinámica, y lógica para alta, baja y reactivación.
+ * 
+ * @returns {JSX.Element}
+ */
 export default function Empleados() {
-  const [search, setSearch] = useState("");
-  const [allEmpleados, setAllEmpleados] = useState([]); // Lista completa desde la BD
-  const [empleados, setEmpleados] = useState([]); // Lista filtrada
-  const [selectedEmployee, setSelectedEmployee] = useState(null);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [newEmployeeName, setNewEmployeeName] = useState("");
+  // === ESTADOS ===
+  const [search, setSearch] = useState(""); // Texto para el filtro por nombre
+  const [allEmpleados, setAllEmpleados] = useState([]); // Todos los empleados desde la BD
+  const [empleados, setEmpleados] = useState([]); // Lista visible (filtrada)
+  const [selectedEmployee, setSelectedEmployee] = useState(null); // Empleado seleccionado
+  const [modalVisible, setModalVisible] = useState(false); // Mostrar/ocultar modal
+  const [newEmployeeName, setNewEmployeeName] = useState(""); // Nombre para el nuevo empleado
 
-  // Cargar empleados al iniciar la pantalla
+  // Al montar la pantalla → bloquear orientación y cargar empleados
   useEffect(() => {
+    ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
     fetchEmpleados();
   }, []);
 
-  // Función para obtener empleados de la base de datos
+  // Obtener empleados desde la base de datos
   const fetchEmpleados = async () => {
     const empleadosDB = await obtenerEmpleados();
     setAllEmpleados(empleadosDB);
     setEmpleados(empleadosDB);
   };
 
-  // Filtrar empleados en tiempo real
+  // Filtro dinámico por nombre
   const handleSearch = (text) => {
     setSearch(text);
     if (text === "") {
@@ -39,12 +70,12 @@ export default function Empleados() {
     }
   };
 
-  // Seleccionar un empleado
+  // Selección de empleado (toggle si se pulsa 2 veces)
   const handleSelect = (empleado) => {
     setSelectedEmployee(empleado.id === selectedEmployee?.id ? null : empleado);
   };
 
-  // Desactivar empleado con confirmación
+  // Mostrar confirmación para desactivar un empleado
   const handleDesactivar = async () => {
     if (!selectedEmployee) return;
 
@@ -58,7 +89,7 @@ export default function Empleados() {
           style: "destructive",
           onPress: async () => {
             await desactivarEmpleado(selectedEmployee.id);
-            await fetchEmpleados(); // Recargamos la lista desde la BD
+            await fetchEmpleados();
             setSelectedEmployee(null);
           },
         },
@@ -66,32 +97,31 @@ export default function Empleados() {
     );
   };
 
-  // Mostrar modal para agregar un empleado
+  // Abrir el modal para añadir nuevo empleado
   const handleAddEmployee = () => {
     setModalVisible(true);
   };
 
-  // Confirmar y agregar nuevo empleado en la BD
+  // Lógica para añadir un empleado (con validaciones)
   const confirmAddEmployee = async () => {
     if (!newEmployeeName.trim()) {
       Alert.alert("Error", "El nombre no puede estar vacío.");
       return;
     }
-    // Verificar si ya existe el nombre
 
-    const existente = await buscarEmpleadoPorNombre(newEmployeeName);
+    const existente = await buscarEmpleadoPorNombre(newEmployeeName.trim());
+
+    // Ya existe
     if (existente) {
-      
-      console.log(existente[0].activo);
-      if (existente[0].activo===1) {
+      if (existente[0].activo === 1) {
         Alert.alert(
           "Empleado ya registrado",
-          "Ya existe un empleado con ese nombre y está activo.\n\nPor favor, introduce nombre y apellido para evitar confusión."
+          "Ya existe un empleado con ese nombre y está activo.\n\nIntroduce nombre y apellido para evitar confusión."
         );
       } else {
         Alert.alert(
           "Empleado inactivo",
-          `Ya existe un empleado con ese nombre, pero está inactivo.\n\n¿Deseas reactivar a ${existente[0].nombre}? Esta accion solo deberia ser llevada a cabo en caso de que el empleado se esté reincorporando a la empresa.`,
+          `Ya existe un empleado con ese nombre, pero está inactivo.\n\n¿Deseas reactivarlo? Esta acción solo debe usarse si el empleado se reincorpora.`,
           [
             { text: "Cancelar", style: "cancel" },
             {
@@ -110,10 +140,12 @@ export default function Empleados() {
       }
       return;
     }
+
+    // No existe → agregar
     const newEmployee = await agregarEmpleado(newEmployeeName.trim());
 
     if (newEmployee) {
-      await fetchEmpleados(); // Recargamos la lista desde la BD
+      await fetchEmpleados();
       setNewEmployeeName("");
       setModalVisible(false);
     } else {
@@ -121,14 +153,12 @@ export default function Empleados() {
     }
   };
 
-  useEffect(() => {
-    ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
-  }, []);
-
+  // === VISTA PRINCIPAL ===
   return (
     <View style={styles.container}>
       <Header />
 
+      {/* Búsqueda */}
       <TextInput
         style={globalStyles.input}
         placeholder="Filtrar por nombre"
@@ -136,6 +166,7 @@ export default function Empleados() {
         onChangeText={handleSearch}
       />
 
+      {/* Lista de empleados */}
       <View style={styles.listWrapper}>
         <View style={styles.listContainer}>
           <Text style={styles.header}>EMPLEADOS</Text>
@@ -157,6 +188,7 @@ export default function Empleados() {
         </View>
       </View>
 
+      {/* Botones de acción */}
       <View style={styles.buttonsContainer}>
         <TouchableOpacity
           style={globalStyles.button}
@@ -177,7 +209,7 @@ export default function Empleados() {
         </TouchableOpacity>
       </View>
 
-      {/* Modal para añadir un nuevo empleado */}
+      {/* Modal para añadir nuevo empleado */}
       <Modal visible={modalVisible} animationType="slide" transparent={true}>
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>

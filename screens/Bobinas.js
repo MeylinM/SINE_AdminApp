@@ -1,3 +1,9 @@
+/**
+ * @file Bobinas.js
+ * @description Pantalla de registro de bobinas con filtros por estado, matrícula y empleado.
+ * Muestra los datos en formato tabla horizontal y permite exportarlos a Excel.
+ */
+
 import React, { useEffect, useState } from "react";
 import {
   View,
@@ -7,25 +13,34 @@ import {
   TextInput,
   ActivityIndicator,
   Alert,
+  StatusBar,
 } from "react-native";
-import globalStyles from "../styles/globalStyles";
-import styles from "../styles/bobinasStyles";
-import * as ScreenOrientation from "expo-screen-orientation";
-import ModalSelector from "react-native-modal-selector";
-import { Ionicons } from "@expo/vector-icons";
-import { StatusBar } from "react-native";
-import { exportarExcel } from "../utils/ExportarExcel"; // Importamos la función
-import { obtenerBobinas } from "../services/productoService";
 
+import globalStyles from "../styles/globalStyles"; // Estilos generales
+import styles from "../styles/bobinasStyles"; // Estilos específicos para esta pantalla
+import * as ScreenOrientation from "expo-screen-orientation"; // Control de orientación
+import ModalSelector from "react-native-modal-selector"; // Selector de estado
+import { Ionicons } from "@expo/vector-icons"; // Iconos para UI
+import { exportarExcel } from "../utils/ExportarExcel"; // Utilidad para exportar la tabla
+import { obtenerBobinas } from "../services/productoService"; // Servicio para obtener datos
+
+/**
+ * Componente principal para ver y exportar el registro de bobinas.
+ * Incluye filtros, vista horizontal en tabla, y exportación a Excel.
+ * 
+ * @returns {JSX.Element} Pantalla completa del módulo de bobinas.
+ */
 export default function Bobinas() {
+  // === ESTADOS ===
   const [estadoSeleccionado, setEstadoSeleccionado] = useState("All");
   const [matriculaBusqueda, setMatriculaBusqueda] = useState("");
   const [empleadoBusqueda, setEmpleadoBusqueda] = useState("");
-  const [bobinas, setBobinas] = useState([]); // Lista de bobinas desde la API
-  const [historial, setHistorial] = useState([]); // Lista de registros desde la API
-  const [loading, setLoading] = useState(true); // Estado de carga
-  const [error, setError] = useState(false); // Estado para manejar errores
+  const [bobinas, setBobinas] = useState([]); // Lista completa de bobinas
+  const [historial, setHistorial] = useState([]); // (Actualmente no usado)
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
+  // Opciones de estados para el selector
   const estados = [
     { key: "All", label: "Todos" },
     { key: "Recibido", label: "Recibido" },
@@ -33,13 +48,13 @@ export default function Bobinas() {
     { key: "Devuelto", label: "Devuelto" },
   ];
 
+  // Bloquear orientación a horizontal al entrar, y devolver a vertical al salir
   useEffect(() => {
     const cambiarOrientacion = async () => {
       await ScreenOrientation.lockAsync(
         ScreenOrientation.OrientationLock.LANDSCAPE_RIGHT
       );
     };
-
     cambiarOrientacion();
 
     return () => {
@@ -49,11 +64,12 @@ export default function Bobinas() {
     };
   }, []);
 
-  // 📌 Obtener bobinas desde la API al cargar la pantalla
+  // Al cargar la pantalla, obtener bobinas desde la API
   useEffect(() => {
     cargarBobinas();
   }, []);
 
+  // Función que llama al servicio y guarda las bobinas
   const cargarBobinas = async () => {
     setError(false);
     const data = await obtenerBobinas();
@@ -69,12 +85,12 @@ export default function Bobinas() {
     setBobinas(data);
   };
 
+  // Filtro de bobinas según estado, matrícula y empleado
   const filteredBobinas = bobinas.filter((bobina) => {
     const coincideEstado =
       estadoSeleccionado === "All" || bobina.estado === estadoSeleccionado;
     const coincideMatricula = bobina.matricula.includes(matriculaBusqueda);
 
-    // Convertimos los valores a minúsculas para una búsqueda insensible a mayúsculas/minúsculas
     const textoBusqueda = empleadoBusqueda.toLowerCase();
     const coincideEmpleado =
       textoBusqueda === "" ||
@@ -85,16 +101,22 @@ export default function Bobinas() {
     return coincideEstado && coincideMatricula && coincideEmpleado;
   });
 
+  // === VISTA ===
   return (
     <View style={styles.container}>
       <Text style={styles.title}>REGISTRO DE BOBINAS</Text>
+
+      {/* FILTROS */}
       <View style={styles.filtersContainer}>
+        {/* Buscar por matrícula */}
         <TextInput
           style={styles.input}
           placeholder="Buscar por matrícula"
           value={matriculaBusqueda}
           onChangeText={(text) => setMatriculaBusqueda(text)}
         />
+
+        {/* Selector de estado */}
         <View style={styles.pickerContainer}>
           <ModalSelector
             data={estados}
@@ -111,6 +133,8 @@ export default function Bobinas() {
             </TouchableOpacity>
           </ModalSelector>
         </View>
+
+        {/* Buscar por empleado */}
         <TextInput
           style={styles.input}
           placeholder="Buscar por empleado"
@@ -118,17 +142,21 @@ export default function Bobinas() {
           onChangeText={(text) => setEmpleadoBusqueda(text)}
         />
       </View>
+
+      {/* TABLA DE RESULTADOS */}
       <ScrollView horizontal>
         <View style={styles.table}>
-          {/* Encabezado principal */}
+
+          {/* Encabezado principal de la tabla */}
           <View style={styles.headerRow}>
-          <Text style={styles.headerCell}>QR ID</Text>
+            <Text style={styles.headerCell}>QR ID</Text>
             <Text style={styles.headerCell}>MATRÍCULA</Text>
             <Text style={styles.headerCell}>ALMACÉN</Text>
             <Text style={styles.headerCell}>OT</Text>
             <Text style={styles.headerCell}>DESCRIPCIÓN OBRA</Text>
             <Text style={styles.headerCell}>ESTADO</Text>
 
+            {/* Subgrupo: Información recogida */}
             <View style={styles.headerGroup}>
               <Text style={styles.headerCellBig}>INFORMACIÓN RECOGIDA</Text>
               <View style={styles.subHeaderRow}>
@@ -137,6 +165,7 @@ export default function Bobinas() {
               </View>
             </View>
 
+            {/* Subgrupo: Para devolver */}
             <View style={styles.headerGroup}>
               <Text style={styles.headerCellBig}>INFORMACIÓN DEVOLUCIÓN</Text>
               <View style={styles.subHeaderRow}>
@@ -145,6 +174,7 @@ export default function Bobinas() {
               </View>
             </View>
 
+            {/* Subgrupo: Confirmación */}
             <View style={styles.headerGroup}>
               <Text style={styles.headerCellBig}>INFORMACIÓN CONFIRMACIÓN</Text>
               <View style={styles.subHeaderRow}>
@@ -156,10 +186,9 @@ export default function Bobinas() {
             <Text style={styles.headerCell}>OBSERVACIONES</Text>
           </View>
 
-          {/* Renderizar las filas con datos */}
+          {/* FILAS DE DATOS */}
           <ScrollView style={styles.dataScroll} nestedScrollEnabled={true}>
             {filteredBobinas.map((bobina, index) => (
-
               <View key={index} style={styles.row}>
                 <Text style={styles.cell}>{bobina.producto_id}</Text>
                 <Text style={styles.cell}>{bobina.matricula}</Text>
@@ -184,6 +213,7 @@ export default function Bobinas() {
         </View>
       </ScrollView>
 
+      {/* BOTÓN PARA EXPORTAR A EXCEL */}
       <View style={styles.buttonsContainer}>
         <TouchableOpacity
           style={styles.button}

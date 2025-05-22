@@ -1,39 +1,52 @@
+/**
+ * @file almacenesStyles.js
+ * @description Estilos para la pantalla de gestión de almacenes. 
+ * Incluye estilos para listas, botones, modal y estructura visual general.
+ */
+
 import { StyleSheet } from "react-native";
 
 export default StyleSheet.create({
-
+  /** Contenedor principal de toda la vista */
   container: {
     flex: 1,
-    backgroundColor: "#d9d9d9",
+    backgroundColor: "#d9d9d9", // Gris claro de fondo
     alignItems: "center",
-    justifyContent: "space-between", // o "flex-start"
+    justifyContent: "space-between", // Distribuye elementos verticalmente
   },
 
+  /** Contenedor externo de la lista */
   listWrapper: {
     flex: 1,
     width: "100%",
     alignItems: "center",
   },
+
+  /** Caja blanca que contiene la lista */
   listContainer: {
     backgroundColor: "white",
     width: "90%",
     borderRadius: 10,
     padding: 10,
-    maxHeight: "100%" ,// Evita que la lista crezca demasiado
+    maxHeight: "100%", // Evita que se desborde
     borderWidth: 2,
-    borderColor: "#019edf", // Borde azul como en el prototipo
+    borderColor: "#019edf", // Azul corporativo
   },
+
+  /** Título superior de la lista */
   header: {
     fontSize: 18,
     fontWeight: "bold",
     color: "white",
-    backgroundColor: "#019edf", // Azul principal del prototipo
+    backgroundColor: "#019edf", // Azul principal
     paddingVertical: 10,
     width: "100%",
     textAlign: "center",
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
   },
+
+  /** Elemento individual de la lista */
   item: {
     padding: 15,
     borderBottomWidth: 1,
@@ -41,30 +54,35 @@ export default StyleSheet.create({
     width: "100%",
     alignItems: "center",
   },
+
+  /** Estilo para un item seleccionado */
   selectedItem: {
-    backgroundColor: "#75c5f0", // Azul claro para resaltar
+    backgroundColor: "#75c5f0", // Azul claro para destacar
   },
 
-  //Botones 
+  /** Estilo aplicado a botones deshabilitados */
   disabledButton: {
-    backgroundColor: "#ccc", // Botón deshabilitado en gris
+    backgroundColor: "#ccc", // Gris para indicar inactividad
   },
 
+  /** Contenedor de los botones principales (añadir, modificar, eliminar) */
   buttonsContainer: {
-    marginTop:20,
+    marginTop: 20,
     width: "90%",
     paddingVertical: 0,
     alignItems: "center",
     marginBottom: 20,
   },
 
-  // Estilos del Modal
+  /** Contenedor del modal (fondo semitransparente) */
   modalContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "rgba(0, 0, 0, 0.5)", // Fondo oscuro translúcido
   },
+
+  /** Caja blanca dentro del modal */
   modalContent: {
     backgroundColor: "white",
     padding: 20,
@@ -72,12 +90,16 @@ export default StyleSheet.create({
     width: "80%",
     alignItems: "center",
   },
+
+  /** Título del modal */
   modalTitle: {
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 10,
-    color: "#019edf", // Azul para destacar el título
+    color: "#019edf", // Azul corporativo
   },
+
+  /** Input dentro del modal */
   modalInput: {
     width: "100%",
     padding: 10,
@@ -87,11 +109,15 @@ export default StyleSheet.create({
     marginBottom: 15,
     textAlign: "center",
   },
+
+  /** Contenedor de los botones dentro del modal */
   modalButtons: {
     flexDirection: "row",
     justifyContent: "space-between",
     width: "100%",
   },
+
+  /** Botón dentro del modal (confirmar o cancelar) */
   modalButton: {
     backgroundColor: "#019edf",
     padding: 10,
@@ -99,9 +125,13 @@ export default StyleSheet.create({
     width: "45%",
     alignItems: "center",
   },
+
+  /** Estilo para el botón de cancelar */
   cancelButton: {
-    backgroundColor: "#ccc",
+    backgroundColor: "#ccc", // Gris
   },
+
+  /** Texto dentro de los botones del modal */
   buttonText: {
     color: "white",
     fontSize: 16,
